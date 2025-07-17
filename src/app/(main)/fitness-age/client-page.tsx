@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dumbbell, Utensils, PersonStanding, FileText, Stethoscope } from 'lucide-react';
+import { Dumbbell, Utensils, PersonStanding } from 'lucide-react';
 
 type FitnessDataItem = Item & {
   definition: string;
@@ -46,33 +46,34 @@ export function FitnessAgeClientPage({ data }: FitnessAgeClientPageProps) {
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Click -&gt;</span>
-        <Select value={selectedKey} onValueChange={setSelectedKey}>
-          <SelectTrigger className="w-[200px] bg-card border-primary/50">
-            <SelectValue placeholder="Select..." />
-          </SelectTrigger>
-          <SelectContent>
-            {dataKeys.map((key) => (
-              <SelectItem key={key} value={key}>
-                {key}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+    <div className="space-y-4">
+      <div className="flex flex-col lg:flex-row lg:items-start lg:gap-6 space-y-4 lg:space-y-0">
+        <div className="flex items-center gap-4 flex-shrink-0">
+          <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Click -&gt;</span>
+          <Select value={selectedKey} onValueChange={setSelectedKey}>
+            <SelectTrigger className="w-[200px] bg-card border-primary/50">
+              <SelectValue placeholder="Select..." />
+            </SelectTrigger>
+            <SelectContent>
+              {dataKeys.map((key) => (
+                <SelectItem key={key} value={key}>
+                  {key}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-        <div className="space-y-2">
+        <div className="flex-grow space-y-2">
             <h3 className="font-semibold text-primary">Definition</h3>
-            <div className="p-4 bg-blue-100 rounded-lg">
+            <div className="p-3 bg-blue-100/60 rounded-lg h-full">
                 <p className="text-sm text-gray-700">{selectedData.definition}</p>
             </div>
         </div>
-        <div className="space-y-2">
+
+        <div className="flex-grow space-y-2">
             <h3 className="font-semibold text-primary">Related disease</h3>
-            <div className="p-4 bg-blue-100 rounded-lg">
+            <div className="p-3 bg-blue-100/60 rounded-lg h-full">
                 <p className="text-sm text-gray-700">{selectedData.relatedDisease}</p>
             </div>
         </div>
@@ -81,13 +82,13 @@ export function FitnessAgeClientPage({ data }: FitnessAgeClientPageProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {recommendationSections.map((section) => (
           <Card key={section.title} className="flex flex-col">
-            <CardHeader className={`text-white rounded-t-lg ${section.color} p-4`}>
+            <CardHeader className={`text-white rounded-t-lg ${section.color} p-3`}>
               <CardTitle className="flex items-center gap-2 text-md font-bold">
                 <section.icon className="w-5 h-5" />
                 {section.title}
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-4 flex-grow">
+            <CardContent className="p-3 flex-grow">
               <p className="text-sm text-foreground whitespace-pre-wrap">{section.value}</p>
             </CardContent>
           </Card>

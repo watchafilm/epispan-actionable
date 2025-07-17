@@ -1,6 +1,5 @@
 import { getItems } from '@/lib/data';
 import { FitnessAgeClientPage } from './client-page';
-import { HeartPulse, Utensils, Dumbbell, PersonStanding } from 'lucide-react';
 import type { Item } from '@/lib/definitions';
 import Image from 'next/image';
 
@@ -62,7 +61,7 @@ export default async function FitnessAgePage() {
 
   return (
     <div className="container mx-auto py-6 px-4">
-      <div className="flex items-center gap-4 mb-2">
+      <div className="grid grid-cols-1 md:grid-cols-[120px_1fr] items-start gap-x-6 gap-y-4 mb-4">
         <div className="flex-shrink-0">
             <Image
                 src="https://www.genfosis.com/images/Genfosis_Logo_PNG.webp"
@@ -72,13 +71,15 @@ export default async function FitnessAgePage() {
                 priority
             />
         </div>
-        <div>
-          <h1 className="text-2xl font-bold text-primary">FITNESS AGE</h1>
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold text-primary tracking-wider">FITNESS AGE</h1>
+           <p className="text-muted-foreground text-sm max-w-4xl">
+            Incorporating physical fitness measurements into epigenetic clocks enhances the detection of lifestyle, medical, and environmental impacts on aging. The DNAmFitAgeAccel algorithm, developed by UCLA researchers, estimates epigenetic age acceleration based on fitness. A modified version, called OMICm FitAge, integrates the OMICm Age algorithm (developed with Harvard) to estimate biological age based on physical fitness and functionality.
+          </p>
         </div>
       </div>
-      <p className="text-muted-foreground mb-4 text-sm max-w-4xl">
-        Incorporating physical fitness measurements into epigenetic clocks enhances the detection of lifestyle, medical, and environmental impacts on aging. The DNAmFitAgeAccel algorithm, developed by UCLA researchers, estimates epigenetic age acceleration based on fitness. A modified version, called OMICm FitAge, integrates the OMICm Age algorithm (developed with Harvard) to estimate biological age based on physical fitness and functionality.
-      </p>
+      
+      <hr className="h-1 bg-primary border-0 rounded my-4" />
 
       {Object.keys(fitnessData).length > 0 ? (
         <FitnessAgeClientPage data={fitnessData} />

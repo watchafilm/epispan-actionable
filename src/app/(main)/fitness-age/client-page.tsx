@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dumbbell, Utensils, PersonStanding, HeartPulse, Stethoscope, FileText } from 'lucide-react';
+import { Dumbbell, Utensils, PersonStanding, FileText, Stethoscope } from 'lucide-react';
 
 type FitnessDataItem = Item & {
   definition: string;
@@ -39,11 +39,6 @@ export function FitnessAgeClientPage({ data }: FitnessAgeClientPageProps) {
       )
   }
 
-  const infoSections = [
-    { title: 'Definition', value: selectedData.definition, icon: FileText },
-    { title: 'Related Disease', value: selectedData.relatedDisease, icon: Stethoscope },
-  ];
-
   const recommendationSections = [
     { title: 'Diet', value: selectedData.diet, icon: Utensils, color: 'bg-[#4285F4]' },
     { title: 'Exercise', value: selectedData.exercise, icon: Dumbbell, color: 'bg-[#6C9DFF]' },
@@ -51,9 +46,9 @@ export function FitnessAgeClientPage({ data }: FitnessAgeClientPageProps) {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <span className="text-sm font-medium text-muted-foreground">Click -&gt;</span>
+        <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Click -&gt;</span>
         <Select value={selectedKey} onValueChange={setSelectedKey}>
           <SelectTrigger className="w-[200px] bg-card border-primary/50">
             <SelectValue placeholder="Select..." />
@@ -68,27 +63,26 @@ export function FitnessAgeClientPage({ data }: FitnessAgeClientPageProps) {
         </Select>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {infoSections.map(section => (
-            <Card key={section.title} className="bg-muted/30">
-                <CardHeader className="pb-2">
-                    <CardTitle className="text-md font-semibold flex items-center gap-2 text-primary">
-                        <section.icon className="w-4 h-4" />
-                        {section.title}
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{section.value}</p>
-                </CardContent>
-            </Card>
-        ))}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        <div className="space-y-2">
+            <h3 className="font-semibold text-primary">Definition</h3>
+            <div className="p-4 bg-blue-100 rounded-lg">
+                <p className="text-sm text-gray-700">{selectedData.definition}</p>
+            </div>
+        </div>
+        <div className="space-y-2">
+            <h3 className="font-semibold text-primary">Related disease</h3>
+            <div className="p-4 bg-blue-100 rounded-lg">
+                <p className="text-sm text-gray-700">{selectedData.relatedDisease}</p>
+            </div>
+        </div>
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {recommendationSections.map((section) => (
           <Card key={section.title} className="flex flex-col">
             <CardHeader className={`text-white rounded-t-lg ${section.color} p-4`}>
-              <CardTitle className="flex items-center gap-2 text-lg font-bold">
+              <CardTitle className="flex items-center gap-2 text-md font-bold">
                 <section.icon className="w-5 h-5" />
                 {section.title}
               </CardTitle>

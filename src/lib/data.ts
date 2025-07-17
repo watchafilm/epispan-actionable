@@ -4,10 +4,10 @@ let items: Item[] = [
   {
     id: '1',
     category: 'FitnessAge',
-    title: 'FitnessAge',
-    value: '55 years',
-    description: 'Your biological age based on your fitness level. This is a powerful predictor of future health.',
-    buttonText: 'Click -> Gait Speed',
+    title: 'Gait Speed',
+    value: '1.2 m/s',
+    description: 'Speed of walking over a short distance; reflects lower body strength, coordination, and neurological function.',
+    buttonText: 'Improve Gait Speed',
     buttonLink: '#',
   },
   {
@@ -51,7 +51,7 @@ let items: Item[] = [
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
 export async function getItems(category?: Item['category']) {
-  await new Promise(resolve => setTimeout(resolve, 500)); 
+  await new Promise(resolve => setTimeout(resolve, 100)); 
   if (category) {
     return items.filter((item) => item.category === category);
   }
@@ -59,20 +59,20 @@ export async function getItems(category?: Item['category']) {
 }
 
 export async function getAllItems() {
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise(resolve => setTimeout(resolve, 100));
   return items;
 }
 
 
 export async function addItem(itemData: Omit<Item, 'id'>) {
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise(resolve => setTimeout(resolve, 100));
   const newItem: Item = { ...itemData, id: generateId() };
   items.push(newItem);
   return newItem;
 }
 
 export async function updateItem(id: string, updates: Partial<Omit<Item, 'id'>>) {
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise(resolve => setTimeout(resolve, 100));
   const itemIndex = items.findIndex((item) => item.id === id);
   if (itemIndex === -1) {
     throw new Error('Item not found');
@@ -82,7 +82,7 @@ export async function updateItem(id: string, updates: Partial<Omit<Item, 'id'>>)
 }
 
 export async function deleteItem(id: string) {
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise(resolve => setTimeout(resolve, 100));
   const initialLength = items.length;
   items = items.filter((item) => item.id !== id);
   if (items.length === initialLength) {

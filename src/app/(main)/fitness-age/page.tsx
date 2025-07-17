@@ -61,7 +61,7 @@ export default async function FitnessAgePage() {
 
   return (
     <div className="container mx-auto py-6 px-4">
-      <div className="grid grid-cols-12 items-center gap-x-6 mb-4">
+      <div className="grid grid-cols-12 items-center gap-x-6 mb-8">
         <div className="col-span-2 flex-shrink-0">
             <Image
                 src="https://www.genfosis.com/images/Genfosis_Logo_PNG.webp"

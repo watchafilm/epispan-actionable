@@ -45,9 +45,9 @@ export function FitnessAgeClientPage({ data }: FitnessAgeClientPageProps) {
   ];
 
   const recommendationSections = [
-    { title: 'Diet', value: selectedData.diet, icon: Utensils, color: 'bg-blue-500' },
-    { title: 'Exercise', value: selectedData.exercise, icon: Dumbbell, color: 'bg-green-500' },
-    { title: 'Lifestyle', value: selectedData.lifestyle, icon: PersonStanding, color: 'bg-purple-500' },
+    { title: 'Diet', value: selectedData.diet, icon: Utensils, color: 'bg-[#4285F4]' },
+    { title: 'Exercise', value: selectedData.exercise, icon: Dumbbell, color: 'bg-[#6C9DFF]' },
+    { title: 'Lifestyle', value: selectedData.lifestyle, icon: PersonStanding, color: 'bg-[#A5C2FF]' },
   ];
 
   return (
@@ -87,7 +87,7 @@ export function FitnessAgeClientPage({ data }: FitnessAgeClientPageProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {recommendationSections.map((section) => (
           <Card key={section.title} className="flex flex-col">
-            <CardHeader className={`text-primary-foreground rounded-t-lg ${section.color} p-4`}>
+            <CardHeader className={`text-white rounded-t-lg ${section.color} p-4`}>
               <CardTitle className="flex items-center gap-2 text-lg font-bold">
                 <section.icon className="w-5 h-5" />
                 {section.title}

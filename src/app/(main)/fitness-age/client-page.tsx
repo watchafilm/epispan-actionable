@@ -51,7 +51,7 @@ export function FitnessAgeClientPage({ data }: FitnessAgeClientPageProps) {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex items-center gap-4">
         <span className="text-sm font-medium text-muted-foreground">Click -&gt;</span>
         <Select value={selectedKey} onValueChange={setSelectedKey}>
@@ -68,33 +68,33 @@ export function FitnessAgeClientPage({ data }: FitnessAgeClientPageProps) {
         </Select>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {infoSections.map(section => (
             <Card key={section.title} className="bg-muted/30">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-lg font-semibold flex items-center gap-2 text-primary">
-                        <section.icon className="w-5 h-5" />
+                    <CardTitle className="text-md font-semibold flex items-center gap-2 text-primary">
+                        <section.icon className="w-4 h-4" />
                         {section.title}
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-muted-foreground whitespace-pre-wrap">{section.value}</p>
+                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{section.value}</p>
                 </CardContent>
             </Card>
         ))}
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {recommendationSections.map((section) => (
           <Card key={section.title} className="flex flex-col">
-            <CardHeader className={`text-primary-foreground rounded-t-lg ${section.color}`}>
-              <CardTitle className="flex items-center gap-3 text-xl font-bold">
-                <section.icon className="w-6 h-6" />
+            <CardHeader className={`text-primary-foreground rounded-t-lg ${section.color} p-4`}>
+              <CardTitle className="flex items-center gap-2 text-lg font-bold">
+                <section.icon className="w-5 h-5" />
                 {section.title}
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-6 flex-grow">
-              <p className="text-foreground whitespace-pre-wrap">{section.value}</p>
+            <CardContent className="pt-4 flex-grow">
+              <p className="text-sm text-foreground whitespace-pre-wrap">{section.value}</p>
             </CardContent>
           </Card>
         ))}

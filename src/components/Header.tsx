@@ -47,7 +47,7 @@ export function Header() {
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <BarChart3 className="h-6 w-6 text-primary-foreground bg-primary p-1 rounded-sm" />
             <span className="hidden font-bold sm:inline-block">
-              Actionable Insights Hub
+              EPISPAN - Actionable Insights
             </span>
           </Link>
           <NavLinks />
@@ -56,7 +56,7 @@ export function Header() {
         <div className="flex flex-1 items-center justify-between space-x-2 md:hidden">
            <Link href="/" className="flex items-center space-x-2">
             <BarChart3 className="h-6 w-6 text-primary-foreground bg-primary p-1 rounded-sm" />
-            <span className="font-bold">AIH</span>
+            <span className="font-bold">EAI</span>
           </Link>
           <Sheet>
             <SheetTrigger asChild>

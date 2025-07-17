@@ -89,7 +89,11 @@ export function FitnessAgeClientPage({ data }: FitnessAgeClientPageProps) {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-3 flex-grow">
-              <p className="text-sm text-foreground whitespace-pre-wrap">{section.value}</p>
+              <ul className="space-y-2 text-sm text-foreground list-disc pl-5">
+                {section.value.split('\n\n').map((item, index) => (
+                    <li key={index} className="whitespace-pre-wrap">{item}</li>
+                ))}
+              </ul>
             </CardContent>
           </Card>
         ))}

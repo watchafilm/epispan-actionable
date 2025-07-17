@@ -13,7 +13,7 @@ let items: Item[] = [
   {
     id: '2',
     category: 'FitnessAge',
-    title: 'VO2 Max',
+    title: 'VO2MAX',
     value: '42 ml/kg/min',
     description: 'Maximum oxygen uptake during intense exercise. A key indicator of cardiovascular health.',
     buttonText: 'Improve Score',
@@ -46,6 +46,24 @@ let items: Item[] = [
     buttonText: 'See References',
     buttonLink: '#',
   },
+  {
+    id: '6',
+    category: 'FitnessAge',
+    title: 'Grip Strength',
+    value: '40 kg',
+    description: 'Measures hand and forearm strength; correlated with overall muscle strength and functional status.',
+    buttonText: 'Improve Grip',
+    buttonLink: '#',
+  },
+  {
+    id: '7',
+    category: 'FitnessAge',
+    title: 'FEV1',
+    value: '4.0 L',
+    description: 'Forced Expiratory Volume in 1 second; indicates lung function and respiratory health.',
+    buttonText: 'Improve FEV1',
+    buttonLink: '#',
+  }
 ];
 
 const generateId = () => Math.random().toString(36).substr(2, 9);

@@ -63,8 +63,8 @@ export default async function FitnessAgePage() {
     <div className="container mx-auto py-6 px-4">
       <div className="flex justify-between items-start gap-x-6 mb-4">
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-primary tracking-wider">FITNESS AGE</h1>
-           <p className="text-muted-foreground text-sm max-w-4xl">
+          <h1 className="text-3xl font-bold text-[#4285F4] tracking-wider">FITNESS AGE</h1>
+           <p className="text-[#6C9DFF] text-sm max-w-4xl">
             Incorporating physical fitness measurements into epigenetic clocks enhances the detection of lifestyle, medical, and environmental impacts on aging. The DNAmFitAgeAccel algorithm, developed by UCLA researchers, estimates epigenetic age acceleration based on fitness. A modified version, called OMICm FitAge, integrates the OMICm Age algorithm (developed with Harvard) to estimate biological age based on physical fitness and functionality.
           </p>
         </div>

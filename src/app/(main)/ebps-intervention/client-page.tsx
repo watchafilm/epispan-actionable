@@ -64,20 +64,21 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
       </div>
 
       <div className="grid grid-cols-2 gap-px border-2 border-[#f0c242] rounded-lg overflow-hidden bg-[#f0c242]">
-        <Tabs defaultValue="biomarkers" className="col-span-1">
-          <TabsList className="grid w-full grid-cols-2 bg-transparent p-0">
-            <TabsTrigger value="biomarkers" className="pb-2 rounded-none bg-[#fdf3da] data-[state=active]:bg-[#f0c242] data-[state=active]:shadow-none">Biomarkers Category</TabsTrigger>
-            <TabsTrigger value="outcomes" className="pb-2 rounded-none bg-[#fdf3da] data-[state=active]:bg-[#f0c242] data-[state=active]:shadow-none">Clinical outcomes</TabsTrigger>
-          </TabsList>
-        </Tabs>
-        <div className="bg-[#f0c242] text-black p-3 flex items-center justify-center gap-4">
-            <span className="font-semibold">How should we do?</span>
-            <span className="font-bold text-lg bg-[#fdf3da] px-4 py-1 rounded-md">{selectedData.howShouldWeDo}</span>
+        <div className="bg-[#f0c242] text-black p-3 flex items-center justify-center">
+            <span className="font-semibold text-center">How should we do?</span>
+        </div>
+        <div className="bg-[#fdf3da] text-black p-3 flex items-center justify-center">
+            <span className="font-bold text-lg bg-white px-4 py-1 rounded-md">{selectedData.howShouldWeDo}</span>
         </div>
       </div>
       
       <Tabs defaultValue="biomarkers" className="w-full">
-         <TabsContent value="biomarkers" className="mt-0">
+        <TabsList className="grid w-full grid-cols-2 bg-transparent p-0 border-2 border-[#f0c242] rounded-lg overflow-hidden">
+            <TabsTrigger value="biomarkers" className="pb-2 rounded-none bg-[#fdf3da] data-[state=active]:bg-[#f0c242] data-[state=active]:shadow-none data-[state=active]:font-bold">Biomarkers Category</TabsTrigger>
+            <TabsTrigger value="outcomes" className="pb-2 rounded-none bg-[#fdf3da] data-[state=active]:bg-[#f0c242] data-[state=active]:shadow-none data-[state=active]:font-bold">Clinical outcomes</TabsTrigger>
+        </TabsList>
+
+         <TabsContent value="biomarkers" className="mt-0 pt-6">
            <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-[#f0c242] border-2 border-[#f0c242] rounded-lg overflow-hidden">
                 <Card className="rounded-none">
                     <CardHeader className="bg-[#f0c242] text-black p-3">
@@ -115,9 +116,9 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
                 </Card>
             </div>
         </TabsContent>
-        <TabsContent value="outcomes" className="mt-0">
+        <TabsContent value="outcomes" className="mt-0 pt-6">
             <div className="text-center py-16 text-muted-foreground bg-muted/50 rounded-lg">
-                <h2 className="text-2xl font-semibold">Clinical Outcomes</h2>
+                <h2 className="text-2xl font-semibold">Clinical Outcomes for {selectedKey}</h2>
                 <p>Content for clinical outcomes will be displayed here.</p>
             </div>
         </TabsContent>

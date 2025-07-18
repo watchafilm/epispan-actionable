@@ -41,11 +41,11 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-12 items-start gap-x-6 p-4 bg-[#fefdf9] border border-gray-200 rounded-md">
+      <div className="grid grid-cols-12 items-start gap-x-6 p-4 border border-gray-200 rounded-md">
         <div className="col-span-3 flex items-center gap-4">
           <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Click -&gt;</span>
           <Select value={selectedKey} onValueChange={setSelectedKey}>
-            <SelectTrigger className="w-full bg-black text-white border-black">
+            <SelectTrigger className="w-full bg-black text-white border-[#f0c242]">
               <SelectValue placeholder="Select..." />
             </SelectTrigger>
             <SelectContent>
@@ -58,7 +58,7 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
           </Select>
         </div>
         <div className="col-span-9 flex items-start gap-4">
-           <h3 className="font-semibold text-foreground whitespace-nowrap pt-2">Description</h3>
+           <h3 className="font-semibold text-[#f0c242] whitespace-nowrap pt-2">Description</h3>
            <p className="text-sm text-gray-700 whitespace-pre-wrap">{selectedData.description}</p>
         </div>
       </div>

@@ -59,7 +59,7 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
         </div>
         <div className="col-span-9 flex items-start gap-4">
            <h3 className="font-semibold text-[#f0c242] whitespace-nowrap pt-2">Description</h3>
-           <p className="text-sm text-gray-700 whitespace-pre-wrap">{selectedData.description}</p>
+           <p className="text-sm text-gray-700 whitespace-pre-wrap bg-[#fdf3da] p-4 rounded-lg">{selectedData.description}</p>
         </div>
       </div>
       

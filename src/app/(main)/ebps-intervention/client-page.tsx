@@ -45,7 +45,7 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
         <div className="col-span-3 flex items-center gap-4">
           <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Click -&gt;</span>
           <Select value={selectedKey} onValueChange={setSelectedKey}>
-            <SelectTrigger className="w-full bg-black text-white border-[#f0c242]">
+            <SelectTrigger className="w-full bg-transparent text-black border-[#f0c242]">
               <SelectValue placeholder="Select..." />
             </SelectTrigger>
             <SelectContent>

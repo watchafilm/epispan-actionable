@@ -23,8 +23,6 @@ export async function login(formData: FormData) {
     });
     redirect('/admin/dashboard');
   } else {
-    // In a real app, you would handle this more gracefully
-    // For now, we redirect back to login
     redirect('/admin/login?error=InvalidCredentials');
   }
 }
@@ -34,32 +32,84 @@ export async function logout() {
   redirect('/admin/login');
 }
 
-const itemSchema = z.object({
+const fitnessAgeSchema = z.object({
   title: z.string().min(1, 'Title is required'),
-  category: z.enum(['FitnessAge', 'Symphony', 'EBPS Intervention', 'Reference']),
-  value: z.string().min(1, 'Value is required'),
-  description: z.string().min(1, 'Description is required'),
-  buttonText: z.string().min(1, 'Button text is required'),
-  buttonLink: z.string().url('Must be a valid URL').or(z.literal('#')),
+  definition: z.string().min(1, 'Definition is required'),
+  relatedDisease: z.string().min(1, 'Related disease is required'),
+  diet: z.string().min(1, 'Diet is required'),
+  exercise: z.string().min(1, 'Exercise is required'),
+  lifestyle: z.string().min(1, 'Lifestyle is required'),
 });
 
-export async function saveItemAction(id: string | null, data: Omit<Item, 'id'>) {
+const ebpsSchema = z.object({
+    title: z.string().min(1, "Title is required"),
+    description: z.string().min(1, "Description is required"),
+    howShouldWeDo: z.string().min(1, "How should we do is required"),
+    clinicalOutcomes: z.string().min(1, "Clinical outcomes is required"),
+    diet: z.string().min(1, "Diet JSON is required").transform((val, ctx) => {
+        try { return JSON.parse(val) } catch (e) { 
+            ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Diet must be a valid JSON object."});
+            return z.NEVER;
+        }
+    }),
+    recommendations: z.string().min(1, "Recommendations JSON is required").transform((val, ctx) => {
+        try { return JSON.parse(val) } catch (e) { 
+            ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Recommendations must be a valid JSON object."});
+            return z.NEVER;
+        }
+    }),
+});
+
+const simpleSchema = z.object({
+    title: z.string().min(1, 'Title is required'),
+    value: z.string().min(1, 'Value is required'),
+    description: z.string().min(1, 'Description is required'),
+    buttonText: z.string().min(1, 'Button text is required'),
+    buttonLink: z.string().url('Must be a valid URL').or(z.literal('#')),
+});
+
+
+export async function saveItemAction(id: string | null, category: Item['category'], formData: FormData) {
+  const data = Object.fromEntries(formData.entries());
+
+  let schema;
+  switch (category) {
+      case 'FitnessAge':
+          schema = fitnessAgeSchema;
+          break;
+      case 'EBPS Intervention':
+          schema = ebpsSchema;
+          break;
+      case 'Symphony':
+      case 'Reference':
+          schema = simpleSchema;
+          break;
+      default:
+          return { success: false, message: 'Invalid category' };
+  }
+  
   try {
-    const validatedData = itemSchema.parse(data);
+    const validatedData = schema.parse(data);
+    const finalData = { ...validatedData, category };
 
     if (id) {
-      await updateItem(id, validatedData);
+      await updateItem(id, finalData);
     } else {
-      await addItem(validatedData);
+      await addItem(finalData);
     }
 
     revalidatePath('/admin/dashboard');
-    revalidatePath('/(main)/' + validatedData.category.toLowerCase().replace(' ', '-'));
+    const path = `/${category.toLowerCase().replace(/\s+/g, '-')}`;
+    revalidatePath(path);
+    if(path.startsWith('/')) revalidatePath(path.substring(1));
+
+
     return { success: true };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, message: 'Validation failed: ' + error.errors.map(e => e.message).join(', ') };
+      return { success: false, message: 'Validation failed: ' + error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ') };
     }
+    console.error("Save item error:", error);
     return { success: false, message: 'An unexpected error occurred.' };
   }
 }
@@ -68,7 +118,6 @@ export async function deleteItemAction(id: string) {
   try {
     await deleteItem(id);
     revalidatePath('/admin/dashboard');
-    // Also revalidate all public pages as we don't know the category here easily
     revalidatePath('/(main)', 'layout');
     return { success: true };
   } catch (error) {

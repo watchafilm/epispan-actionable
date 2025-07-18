@@ -7,10 +7,12 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import type { Item } from '@/lib/definitions';
+import type { SymphonyItem, ReferenceItem } from '@/lib/definitions';
 import Link from 'next/link';
 
-export function InfoCard({ item }: { item: Item }) {
+type InfoCardItem = SymphonyItem | ReferenceItem;
+
+export function InfoCard({ item }: { item: InfoCardItem }) {
   return (
     <Card className="flex flex-col h-full shadow-md hover:shadow-lg transition-shadow duration-300 border-primary/20">
       <CardHeader>

@@ -1,8 +1,11 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { useState, useEffect } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
+import type { BaseItem, Item } from '@/lib/definitions';
+import { saveItemAction } from '@/lib/actions';
+import { useToast } from '@/hooks/use-toast';
+
 import {
   Dialog,
   DialogContent,
@@ -28,59 +31,98 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import type { Item } from '@/lib/definitions';
-import { saveItemAction } from '@/lib/actions';
-import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
-
-const itemSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
-  category: z.enum(['FitnessAge', 'Symphony', 'EBPS Intervention', 'Reference']),
-  value: z.string().min(1, 'Value is required'),
-  description: z.string().min(1, 'Description is required'),
-  buttonText: z.string().min(1, 'Button text is required'),
-  buttonLink: z.string().url('Must be a valid URL').or(z.literal('#')),
-});
+import { getItemById } from '@/lib/data';
 
 interface ItemDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  item: Item | null;
+  item: BaseItem | null;
 }
 
 export function ItemDialog({ open, onOpenChange, item }: ItemDialogProps) {
   const { toast } = useToast();
-  const form = useForm<z.infer<typeof itemSchema>>({
-    resolver: zodResolver(itemSchema),
+  const [fullItem, setFullItem] = useState<Item | null>(null);
+  
+  const form = useForm({
     defaultValues: {
-      title: item?.title || '',
       category: item?.category || 'FitnessAge',
-      value: item?.value || '',
-      description: item?.description || '',
-      buttonText: item?.buttonText || '',
-      buttonLink: item?.buttonLink || '#',
+      title: '',
+      // Common fields
+      value: '',
+      description: '',
+      buttonText: '',
+      buttonLink: '#',
+      // FitnessAge fields
+      definition: '',
+      relatedDisease: '',
+      diet: '',
+      exercise: '',
+      lifestyle: '',
+      // EBPS fields
+      howShouldWeDo: '',
+      clinicalOutcomes: '',
+      // Note: diet & recommendations for EBPS are handled as JSON strings in textareas
     },
   });
+  
+  const watchedCategory = useWatch({
+    control: form.control,
+    name: "category"
+  });
 
-  // Reset form when item changes
-  const itemId = item?.id;
-  if(form.getValues().title !== (item?.title || '')) {
+  useEffect(() => {
+    if (item?.id) {
+      getItemById(item.id).then(data => {
+        if (data) {
+          setFullItem(data);
+          const defaultValues: any = { category: data.category };
+          
+          Object.keys(data).forEach(key => {
+            const typedKey = key as keyof typeof data;
+            const value = data[typedKey];
+            if(typeof value === 'object' && value !== null){
+                defaultValues[typedKey] = JSON.stringify(value, null, 2);
+            } else {
+                defaultValues[typedKey] = value;
+            }
+          });
+          form.reset(defaultValues);
+        }
+      });
+    } else {
+      setFullItem(null);
       form.reset({
-      title: item?.title || '',
-      category: item?.category || 'FitnessAge',
-      value: item?.value || '',
-      description: item?.description || '',
-      buttonText: item?.buttonText || '',
-      buttonLink: item?.buttonLink || '#',
-    })
-  }
+        category: 'FitnessAge',
+        title: '',
+        value: '',
+        description: '',
+        buttonText: '',
+        buttonLink: '#',
+        definition: '',
+        relatedDisease: '',
+        diet: '',
+        exercise: '',
+        lifestyle: '',
+        howShouldWeDo: '',
+        clinicalOutcomes: '',
+      });
+    }
+  }, [item, form]);
 
-  const onSubmit = async (values: z.infer<typeof itemSchema>) => {
-    const result = await saveItemAction(itemId, values);
+
+  const onSubmit = async (values: any) => {
+    const formData = new FormData();
+    Object.keys(values).forEach(key => {
+        formData.append(key, values[key]);
+    });
+    
+    const result = await saveItemAction(fullItem?.id || null, watchedCategory, formData);
+    
     if (result.success) {
       toast({
         title: 'Success',
-        description: `Item ${itemId ? 'updated' : 'created'} successfully.`,
+        description: `Item ${fullItem?.id ? 'updated' : 'created'} successfully.`,
       });
       onOpenChange(false);
     } else {
@@ -92,9 +134,74 @@ export function ItemDialog({ open, onOpenChange, item }: ItemDialogProps) {
     }
   };
 
+  const renderFormFields = () => {
+    switch (watchedCategory) {
+      case 'FitnessAge':
+        return (
+          <>
+            <FormField control={form.control} name="definition" render={({ field }) => (
+                <FormItem><FormLabel>Definition</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
+            )}/>
+            <FormField control={form.control} name="relatedDisease" render={({ field }) => (
+                <FormItem><FormLabel>Related Disease</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
+            )}/>
+            <FormField control={form.control} name="diet" render={({ field }) => (
+                <FormItem><FormLabel>Diet</FormLabel><FormControl><Textarea {...field} rows={5} /></FormControl><FormMessage /></FormItem>
+            )}/>
+            <FormField control={form.control} name="exercise" render={({ field }) => (
+                <FormItem><FormLabel>Exercise</FormLabel><FormControl><Textarea {...field} rows={3} /></FormControl><FormMessage /></FormItem>
+            )}/>
+            <FormField control={form.control} name="lifestyle" render={({ field }) => (
+                <FormItem><FormLabel>Lifestyle</FormLabel><FormControl><Textarea {...field} rows={3} /></FormControl><FormMessage /></FormItem>
+            )}/>
+          </>
+        );
+      case 'EBPS Intervention':
+        return (
+            <>
+                <FormField control={form.control} name="description" render={({ field }) => (
+                    <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} rows={5} /></FormControl><FormMessage /></FormItem>
+                )}/>
+                <FormField control={form.control} name="howShouldWeDo" render={({ field }) => (
+                    <FormItem><FormLabel>How should we do?</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                )}/>
+                <FormField control={form.control} name="clinicalOutcomes" render={({ field }) => (
+                    <FormItem><FormLabel>Clinical Outcomes</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                )}/>
+                <FormField control={form.control} name="diet" render={({ field }) => (
+                    <FormItem><FormLabel>Diet (JSON)</FormLabel><FormControl><Textarea {...field} rows={8} placeholder='{ "key": "value" }' /></FormControl><FormMessage /></FormItem>
+                )}/>
+                <FormField control={form.control} name="recommendations" render={({ field }) => (
+                    <FormItem><FormLabel>Recommendations (JSON)</FormLabel><FormControl><Textarea {...field} rows={8} placeholder='{ "key": "value" or ["value1", "value2"] }' /></FormControl><FormMessage /></FormItem>
+                )}/>
+            </>
+        )
+      case 'Symphony':
+      case 'Reference':
+        return (
+          <>
+            <FormField control={form.control} name="value" render={({ field }) => (
+                <FormItem><FormLabel>Value</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+            )}/>
+            <FormField control={form.control} name="description" render={({ field }) => (
+                <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
+            )}/>
+            <FormField control={form.control} name="buttonText" render={({ field }) => (
+                <FormItem><FormLabel>Button Text</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+            )}/>
+            <FormField control={form.control} name="buttonLink" render={({ field }) => (
+                <FormItem><FormLabel>Button Link</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+            )}/>
+          </>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{item ? 'Edit Item' : 'Add New Item'}</DialogTitle>
           <DialogDescription>
@@ -102,27 +209,14 @@ export function ItemDialog({ open, onOpenChange, item }: ItemDialogProps) {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. FitnessAge" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto pr-4">
              <FormField
               control={form.control}
               name="category"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
-                   <Select onValueChange={field.onChange} defaultValue={field.value}>
+                   <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!!item}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a category" />
@@ -130,8 +224,8 @@ export function ItemDialog({ open, onOpenChange, item }: ItemDialogProps) {
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="FitnessAge">FitnessAge</SelectItem>
-                      <SelectItem value="Symphony">Symphony</SelectItem>
                       <SelectItem value="EBPS Intervention">EBPS Intervention</SelectItem>
+                      <SelectItem value="Symphony">Symphony</SelectItem>
                       <SelectItem value="Reference">Reference</SelectItem>
                     </SelectContent>
                   </Select>
@@ -139,59 +233,13 @@ export function ItemDialog({ open, onOpenChange, item }: ItemDialogProps) {
                 </FormItem>
               )}
             />
-             <FormField
-              control={form.control}
-              name="value"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Value</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. 55 years" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="Describe the item..." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-             <FormField
-              control={form.control}
-              name="buttonText"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Button Text</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. Click -> Gait Speed" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="buttonLink"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Button Link</FormLabel>
-                  <FormControl>
-                    <Input placeholder="#" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <DialogFooter>
+             <FormField control={form.control} name="title" render={({ field }) => (
+                <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+            )}/>
+
+            {renderFormFields()}
+
+            <DialogFooter className="sticky bottom-0 bg-background py-4">
               <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting ? 'Saving...' : 'Save Changes'}

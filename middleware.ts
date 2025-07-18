@@ -14,11 +14,17 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  if (pathname === '/admin' || pathname === '/admin/login') {
+  if (pathname === '/admin/login') {
     if (isLoggedIn) {
       return NextResponse.redirect(new URL('/admin/dashboard', request.url));
     }
   }
+
+  // Redirect root admin path to dashboard if logged in
+  if (pathname === '/admin' && isLoggedIn) {
+      return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+  }
+
 
   return NextResponse.next();
 }

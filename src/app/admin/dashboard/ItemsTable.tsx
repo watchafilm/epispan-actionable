@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { Item } from '@/lib/definitions';
+import type { BaseItem } from '@/lib/definitions';
 import {
   Table,
   TableBody,
@@ -27,14 +27,14 @@ import { ItemDialog } from './ItemDialog';
 import { deleteItemAction } from '@/lib/actions';
 import { useToast } from '@/hooks/use-toast';
 
-export default function ItemsTable({ items }: { items: Item[] }) {
+export default function ItemsTable({ items }: { items: BaseItem[] }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
-  const [itemToDelete, setItemToDelete] = useState<Item | null>(null);
+  const [selectedItem, setSelectedItem] = useState<BaseItem | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<BaseItem | null>(null);
   const { toast } = useToast();
 
-  const handleEdit = (item: Item) => {
+  const handleEdit = (item: BaseItem) => {
     setSelectedItem(item);
     setDialogOpen(true);
   };
@@ -44,7 +44,7 @@ export default function ItemsTable({ items }: { items: Item[] }) {
     setDialogOpen(true);
   };
 
-  const handleDelete = (item: Item) => {
+  const handleDelete = (item: BaseItem) => {
     setItemToDelete(item);
     setDeleteAlertOpen(true);
   };
@@ -83,7 +83,7 @@ export default function ItemsTable({ items }: { items: Item[] }) {
             <TableRow>
               <TableHead>Title</TableHead>
               <TableHead>Category</TableHead>
-              <TableHead>Value</TableHead>
+              <TableHead>Value / Details</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -118,7 +118,12 @@ export default function ItemsTable({ items }: { items: Item[] }) {
 
       <ItemDialog
         open={dialogOpen}
-        onOpenChange={setDialogOpen}
+        onOpenChange={(isOpen) => {
+          setDialogOpen(isOpen);
+          if (!isOpen) {
+            setSelectedItem(null); // Clear selection on close
+          }
+        }}
         item={selectedItem}
       />
 

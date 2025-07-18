@@ -41,7 +41,7 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-12 items-start gap-x-6 p-4 border border-gray-200 rounded-md">
+      <div className="grid grid-cols-12 items-start gap-x-6 p-4 rounded-md">
         <div className="col-span-3 flex items-center gap-4">
           <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Click -&gt;</span>
           <Select value={selectedKey} onValueChange={setSelectedKey}>

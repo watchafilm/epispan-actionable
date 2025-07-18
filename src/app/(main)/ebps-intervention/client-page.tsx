@@ -74,7 +74,7 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
                     <span className="font-semibold text-center">How should we do ?</span>
                 </div>
                 <div className="bg-[#fdf3da] text-black p-3 flex items-center justify-center">
-                    <span className="font-bold text-lg bg-white px-4 py-1 rounded-md">{selectedData.howShouldWeDo}</span>
+                    <span className="font-bold text-lg">{selectedData.howShouldWeDo}</span>
                 </div>
             </div>
         </div>

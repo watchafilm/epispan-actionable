@@ -16,7 +16,7 @@ type EBPSData = {
     description: string;
     howShouldWeDo: string;
     diet: Record<string, string>;
-    recommendations: Record<string, string[]>;
+    recommendations: Record<string, string | string[]>;
   };
 };
 
@@ -94,11 +94,15 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
                         {Object.entries(selectedData.recommendations).map(([title, points]) => (
                             <div key={title}>
                                 <h4 className="font-semibold">{title}</h4>
-                                <ul className="list-disc pl-5 space-y-1 mt-1">
-                                    {points.map((point, index) => (
-                                        <li key={index} className="text-sm text-gray-700">{point}</li>
-                                    ))}
-                                </ul>
+                                {Array.isArray(points) ? (
+                                    <ul className="list-disc pl-5 space-y-1 mt-1">
+                                        {points.map((point, index) => (
+                                            <li key={index} className="text-sm text-gray-700">{point}</li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p className="text-sm text-gray-700 mt-1">{points}</p>
+                                )}
                             </div>
                         ))}
                     </CardContent>

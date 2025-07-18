@@ -51,12 +51,12 @@ export default async function EBPSInterventionPage() {
         </div>
         <div className="col-span-10">
           <div className="flex items-center gap-x-8">
-              <h1 className="text-4xl font-bold text-[#4a4a4a] tracking-wider">EBPs</h1>
-              <p className="text-[#4a4a4a] text-sm max-w-2xl">
+              <h1 className="text-4xl font-bold text-[#c09103] tracking-wider">EBPs</h1>
+              <p className="text-[#c09103] text-sm max-w-2xl">
                 Epigenetic Biomarker Proxies (EBPs) are DNA methylation-based predictors that estimate biomarker levels without the need for direct laboratory testing. EBPs can offer valuable insights in specific contexts. For example, DNAmCRP, a proxy for C-reactive protein, has been linked to brain health outcomes.
               </p>
           </div>
-          <hr className="h-1 bg-[#f0c242] border-0 rounded mt-2" />
+          <hr className="h-1 bg-[#c09103] border-0 rounded mt-2" />
         </div>
       </div>
       

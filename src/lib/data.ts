@@ -4,38 +4,38 @@ import type { BaseItem, Item, FitnessAgeItem, EBPSInterventionItem, SymphonyItem
 
 // --- Mock Data ---
 const MOCK_FITNESS_AGE_DATA: Omit<FitnessAgeItem, 'id' | 'category'>[] = [
-  {
-    title: "Gait Speed",
-    definition: "Speed of walking over a short distance; reflects lower body strength, coordination, and neurological function.",
-    relatedDisease: "Mobility, risk of disability, neurological health, balance.",
-    diet: "Protein: 20-40 g high-quality protein (e.g., whey) after resistance training session, daily; leucine-rich sources preferred.\n\nVitamin D:\nboth of male and female\n19-70 years : 15 µg/day\n>70 years : 20 µg/day\n\nOmega-3 fatty acid: 1-3 g/day EPA+DHA; upper safe limit is 3 g/day.",
-    exercise: "Resistance training for lower limbs: Walking\n\nGait and balance training\n\nProgressive aerobic walking",
-    lifestyle: "Daily movement, Avoid prolonged secentary behavior, Cognitive and social engagement."
-  },
-  {
-    title: "VO2MAX",
-    definition: "Maximum oxygen uptake; reflects cardiovascular and respiratory efficiency during exercise.",
-    relatedDisease: "Cardiovascular fitness, endurance, longevity, risk of heart disease.",
-    diet: "Dietary nitrate: 5-16.8 mmol (~300-1041 mg) nitrate, taken 2-3 hours before exercise; can be achieved with ~250-500 g of leafy/root vegetables or as a supplement. Avoid mouthwash before use.\n\nIron: Dose varies by deficiency status; in studies, 100 mg elemental iron daily for 6-8 weeks in iron-deficient, non-anemic women improved endurance performance (not VO2Max in all cases).\nDietary References Intakes (DRIs):\nMales > 19-70 Ys: 8 mg/d\nFemales > 19-50 Ys: 18 mg/d\n> 50-70 Ys: 8 mg/d\n\nAntioxidants: Vitamin C 500-1000 mg/day, Vitamin E 15 mg/day.",
-    exercise: "High-intensity interval (HIIT): Intervals at 85-95% HRmax, e.g., 4x4 min with 3 min recovery, 2-3 times/week for ≥6 weeks.\n\nModerate continuous endurance training, Tailored training: Aerobic cardio (running, cycling, swimming).",
-    lifestyle: "Adequate sleep (7-9 hours), Stress management, Training monitoring and adjustment."
-  },
-  {
-    title: "Grip Strength",
-    definition: "Measures hand and forearm strength; correlated with overall muscle strength and functional status.",
-    relatedDisease: "Frailty, sarcopenia, risk of falls, overall mortality.",
-    diet: "Adequate protein intake: ≥1.0-1.2 g/kg body weight/day, ≥20 g high-quality protein per meal, including leucine-rich sources such as eggs, seeds, oats, and legumes.\n\nVitamin D: both of male and female\n19-70 years: 15 µg/day\n>70 years: 20 µg/day\n\nAntioxidants: Vitamin C 500-1000 mg/day, Vitamin E 15 mg/day.",
-    exercise: "Progressive Resistance training for hand/forearm: 2-3 sessions/week, focusing on major lower limb muscles (e.g., squats, leg press), moderate-to-high intensity, 8-12 reps/set, 2-3 sets.\n\nFunctional gripping exercises, Regular physical activity: Incorporate into daily tasks (carrying groceries, opening jars) and structured exercise.",
-    lifestyle: "Smoking cessation, Limit alcohol intake, Maintain healthy weight and manage chronic disease."
-  },
-  {
-    title: "FEV1",
-    definition: "Forced Expiratory Volume in 1 second; indicates lung function and respiratory health.",
-    relatedDisease: "Asthma, COPD, lung health, respiratory aging, early mortality risk.",
-    diet: "Omega-3: 1-3 g/day EPA+DHA; upper safe limit is 3 g/day.\n\nAntioxidants: Vitamin C 500-1000 mg/day, Vitamin E 15 mg/day.\n\nAdequate hydration: ~2-3 L water/day, adjust for climate and activity.",
-    exercise: "Respiratory muscle training: Breathing exercises\n\nModerate-intensity aerobic exercise\n\nYoga with pranayama.",
-    lifestyle: "Smoking cessation, Avoid air pollution, Manage chronic respiratory diseases."
-  }
+    {
+      title: "Grip Strength",
+      definition: "<p>Measures hand and forearm strength; correlated with overall muscle strength and functional status.</p>",
+      relatedDisease: "<p>Frailty, sarcopenia, risk of falls, overall mortality.</p>",
+      diet: "<ul><li>Adequate protein intake: ≥1.0-1.2 g/kg body weight/day</li><li>≥20 g high-quality protein per meal, including leucine-rich sources such as eggs, seeds, oats, and legumes.</li><li>Vitamin D: both of male and female<br>19-70 years: 15 µg/day<br>>70 years: 20 µg/day</li><li>Antioxidants: Vitamin C 500-1000 mg/day, Vitamin E 15 mg/day.</li></ul>",
+      exercise: "<ul><li>Progressive Resistance training for hand/forearm: 2-3 sessions/week, focusing on major lower limb muscles (e.g., squats, leg press), moderate-to-high intensity, 8-12 reps/set, 2-3 sets.</li><li>Functional gripping excercises, Regular physical activity: Incorporate into daily tasks (carrying groceries, opening jars) and structured exercise.</li></ul>",
+      lifestyle: "<p>Smoking cessation, Limit alcohol intake, Maintain healthy weight and manage chronic disease.</p>"
+    },
+    {
+      title: "VO2MAX",
+      definition: "<p>Maximum oxygen uptake; reflects cardiovascular and respiratory efficiency during exercise.</p>",
+      relatedDisease: "<p>Cardiovascular fitness, endurance, longevity, risk of heart disease.</p>",
+      diet: "<ul><li>Dietary nitrate: 5-16.8 mmol (~300-1041 mg) nitrate, taken 2-3 hours before exercise; can be achieved with ~250-500 g of leafy/root vegetables or as a supplement. Avoid mouthwash before use.</li><li>Iron: Dose varies by deficiency status; in studies, 100 mg elemental iron daily for 6-8 weeks in iron-deficient, non-anemic women improved endurance performance (not VO2Max in all cases). Dietary References intakes (DRIs): Males > 19-70 Ys: 8 mg/d, Femakes > 19-50 Ys: 18 mg/d, > 50-70 Ys: 8 mg/d</li><li>Antioxidants: Vitamin C 500-1000 mg/day, Vitamin E 15 mg/day.</li></ul>",
+      exercise: "<ul><li>High-intensity interval (HIIT): Intervals at 85-95% HRmax, e.g., 4x4 min with 3 min recovery, 2-3 times/week for ≥6 weeks.</li><li>Moderate continuous endurance training.</li><li>Tailored training: Aerobic cardio (running, cycling, swimming).</li></ul>",
+      lifestyle: "<p>Adequate sleep (7-9 hours), Stress management, Training monitoring and adjustment.</p>"
+    },
+    {
+        title: "Gait Speed",
+        definition: "<p>Speed of walking over a short distance; reflects lower body strength, coordination, and neurological function.</p>",
+        relatedDisease: "<p>Mobility, risk of disability, neurological health, balance.</p>",
+        diet: "<ul><li>Protein: 20-40 g high-quality protein (e.g., whey) after resistance training session, daily; leucine-rich sources preferred.</li><li>Vitamin D: both of male and female<br>19-70 years: 15 µg/day<br>>70 years: 20 µg/day</li><li>Omega-3 fatty acid: 1-3 g/day EPA+DHA; upper safe limit is 3 g/day.</li></ul>",
+        exercise: "<ul><li>Resistance training for lower limbs: Walking</li><li>Gait and balance training</li><li>Progressive aerobic walking</li></ul>",
+        lifestyle: "<p>Daily movement, Avoid prolonged secentary behavior, Cognitive and social engagement.</p>"
+    },
+    {
+        title: "FEV1",
+        definition: "<p>Forced Expiratory Volume in 1 second; indicates lung function and respiratory health.</p>",
+        relatedDisease: "<p>Asthma, COPD, lung health, respiratory aging, early mortality risk.</p>",
+        diet: "<ul><li>Omega-3: 1-3 g/day EPA+DHA; upper safe limit is 3 g/day.</li><li>Antioxidants: Vitamin C 500-1000 mg/day, Vitamin E 15 mg/day.</li><li>Adequate hydration: ~2-3 L water/day, adjust for climate and activity.</li></ul>",
+        exercise: "<ul><li>Respiratory muscle training: Breathing exercises</li><li>Moderate-intensity aerobic exercise</li><li>Yoga with pranayama.</li></ul>",
+        lifestyle: "<p>Smoking cessation, Avoid air pollution, Manage chronic respiratory diseases.</p>"
+    }
 ];
 
 const MOCK_EBPS_DATA: Omit<EBPSInterventionItem, 'id' | 'category'>[] = [

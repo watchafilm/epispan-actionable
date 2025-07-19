@@ -69,14 +69,14 @@ export function FitnessAgeClientPage({ data }: FitnessAgeClientPageProps) {
         <div className="flex-grow space-y-2">
             <h3 className="font-semibold text-primary">{selectedData.title}</h3>
             <div className="p-3 bg-blue-100/60 rounded-lg h-full">
-                <p className="text-sm text-gray-700">{selectedData.definition}</p>
+                <div className="text-sm text-gray-700" dangerouslySetInnerHTML={{ __html: selectedData.definition }} />
             </div>
         </div>
 
         <div className="flex-grow space-y-2">
             <h3 className="font-semibold text-primary">Related disease</h3>
             <div className="p-3 bg-blue-100/60 rounded-lg h-full">
-                <p className="text-sm text-gray-700">{selectedData.relatedDisease}</p>
+                <div className="text-sm text-gray-700" dangerouslySetInnerHTML={{ __html: selectedData.relatedDisease }} />
             </div>
         </div>
       </div>
@@ -91,11 +91,7 @@ export function FitnessAgeClientPage({ data }: FitnessAgeClientPageProps) {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-3 flex-grow">
-              <ul className="space-y-2 text-sm text-foreground list-disc pl-5">
-                {section.value && section.value.split('\n\n').map((item, index) => (
-                    <li key={index} className="whitespace-pre-wrap">{item}</li>
-                ))}
-              </ul>
+               <div className="prose prose-sm max-w-none text-foreground" dangerouslySetInnerHTML={{ __html: section.value }} />
             </CardContent>
           </Card>
         ))}

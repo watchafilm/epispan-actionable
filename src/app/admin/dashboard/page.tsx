@@ -89,13 +89,19 @@ export default async function AdminDashboardPage() {
                     </div>
                   </div>
 
-                  {Object.values(fitnessData).map(item => (
-                     <AdminEditableWrapper key={item.id} item={item} category="FitnessAge">
-                        <div className="border-2 border-dashed border-gray-300 p-4 rounded-lg my-4 relative hover:border-blue-500 transition-all">
-                             <FitnessAgeClientPage data={{ [item.title]: item }} />
-                        </div>
-                     </AdminEditableWrapper>
-                  ))}
+                  {Object.keys(fitnessData).length > 0 ? (
+                    Object.values(fitnessData).map(item => (
+                       <AdminEditableWrapper key={item.id} item={item} category="FitnessAge">
+                          <div className="border-2 border-dashed border-gray-300 p-4 rounded-lg my-4 relative hover:border-blue-500 transition-all">
+                               <FitnessAgeClientPage data={{ [item.title]: item }} />
+                          </div>
+                       </AdminEditableWrapper>
+                    ))
+                  ) : (
+                    <div className="text-center py-16 text-muted-foreground bg-muted/50 rounded-lg">
+                      <p>No FitnessAge items yet. Click "Add New" to create one.</p>
+                    </div>
+                  )}
               </div>
             </div>
           </TabsContent>
@@ -134,13 +140,19 @@ export default async function AdminDashboardPage() {
                     </div>
                   </div>
                   
-                  {Object.values(ebpsData).map(item => (
-                     <AdminEditableWrapper key={item.id} item={item} category="EBPS Intervention">
-                        <div className="border-2 border-dashed border-gray-300 p-4 rounded-lg my-4 relative hover:border-yellow-500 transition-all">
-                             <EBPSInterventionClientPage data={{ [item.title]: item }} />
-                        </div>
-                     </AdminEditableWrapper>
-                  ))}
+                  {Object.keys(ebpsData).length > 0 ? (
+                    Object.values(ebpsData).map(item => (
+                       <AdminEditableWrapper key={item.id} item={item} category="EBPS Intervention">
+                          <div className="border-2 border-dashed border-gray-300 p-4 rounded-lg my-4 relative hover:border-yellow-500 transition-all">
+                               <EBPSInterventionClientPage data={{ [item.title]: item }} />
+                          </div>
+                       </AdminEditableWrapper>
+                    ))
+                   ) : (
+                    <div className="text-center py-16 text-muted-foreground bg-muted/50 rounded-lg">
+                      <p>No EBPS Intervention items yet. Click "Add New" to create one.</p>
+                    </div>
+                  )}
                 </div>
              </div>
           </TabsContent>

@@ -61,7 +61,7 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
         )}
         <div className="col-span-9 flex items-start gap-4">
            <h3 className="font-semibold text-[#f0c242] whitespace-nowrap pt-2">Description</h3>
-           <p className="text-sm text-gray-700 whitespace-pre-wrap bg-[#fdf3da] p-4 rounded-lg">{selectedData.description}</p>
+           <div className="text-sm text-gray-700 bg-[#fdf3da] p-4 rounded-lg prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: selectedData.description }} />
         </div>
       </div>
       

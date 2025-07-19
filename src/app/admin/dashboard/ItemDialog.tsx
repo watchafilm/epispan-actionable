@@ -35,6 +35,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { getItemById } from '@/lib/data';
+import { RichTextEditor } from '@/components/RichTextEditor';
 
 interface ItemDialogProps {
   open: boolean;
@@ -71,7 +72,6 @@ const ebpsSchema = z.object({
     }),
 });
 
-// We don't use this directly but it's good for reference
 const simpleSchema = z.object({
     title: z.string().min(1, 'Title is required'),
     value: z.string().min(1, 'Value is required'),
@@ -87,22 +87,18 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
   const [isLoading, setIsLoading] = useState(false);
   
   const form = useForm({
-    // resolver: zodResolver(category === 'FitnessAge' ? fitnessAgeSchema : ebpsSchema),
     defaultValues: {
       category: category,
       title: '',
-      // Common fields
       value: '',
       description: '',
       buttonText: '',
       buttonLink: '#',
-      // FitnessAge fields
       definition: '',
       relatedDisease: '',
       diet: '',
       exercise: '',
       lifestyle: '',
-      // EBPS fields
       howShouldWeDo: '',
       clinicalOutcomes: '',
       recommendations: '',
@@ -188,19 +184,19 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
         return (
           <>
             <FormField control={form.control} name="definition" render={({ field }) => (
-                <FormItem><FormLabel>Definition</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Definition</FormLabel><FormControl><RichTextEditor {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
             <FormField control={form.control} name="relatedDisease" render={({ field }) => (
-                <FormItem><FormLabel>Related Disease</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Related Disease</FormLabel><FormControl><RichTextEditor {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
             <FormField control={form.control} name="diet" render={({ field }) => (
-                <FormItem><FormLabel>Diet</FormLabel><FormControl><Textarea {...field} rows={5} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Diet</FormLabel><FormControl><RichTextEditor {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
             <FormField control={form.control} name="exercise" render={({ field }) => (
-                <FormItem><FormLabel>Exercise</FormLabel><FormControl><Textarea {...field} rows={3} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Exercise</FormLabel><FormControl><RichTextEditor {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
             <FormField control={form.control} name="lifestyle" render={({ field }) => (
-                <FormItem><FormLabel>Lifestyle</FormLabel><FormControl><Textarea {...field} rows={3} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Lifestyle</FormLabel><FormControl><RichTextEditor {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
           </>
         );
@@ -208,7 +204,7 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
         return (
             <>
                 <FormField control={form.control} name="description" render={({ field }) => (
-                    <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} rows={5} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Description</FormLabel><FormControl><RichTextEditor {...field} /></FormControl><FormMessage /></FormItem>
                 )}/>
                 <FormField control={form.control} name="howShouldWeDo" render={({ field }) => (
                     <FormItem><FormLabel>How should we do?</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
@@ -232,7 +228,7 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
                 <FormItem><FormLabel>Value</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
             <FormField control={form.control} name="description" render={({ field }) => (
-                <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Description</FormLabel><FormControl><RichTextEditor {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
             <FormField control={form.control} name="buttonText" render={({ field }) => (
                 <FormItem><FormLabel>Button Text</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>

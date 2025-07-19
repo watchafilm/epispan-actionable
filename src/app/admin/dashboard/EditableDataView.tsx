@@ -75,7 +75,7 @@ const FitnessAgeCard = ({ item, onEdit, onDelete }: { item: FitnessAgeItem, onEd
                         </CardHeader>
                         <CardContent className="p-3 flex-grow">
                         <ul className="space-y-2 text-sm text-foreground list-disc pl-5">
-                            {section.value.split('\n\n').map((point, index) => (
+                            {section.value && section.value.split('\n\n').map((point, index) => (
                                 <li key={index} className="whitespace-pre-wrap">{point}</li>
                             ))}
                         </ul>
@@ -123,7 +123,7 @@ const EBPSCard = ({ item, onEdit, onDelete }: { item: EBPSInterventionItem, onEd
                     <CardTitle className="text-lg font-bold">Diet</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
-                    {Object.entries(item.diet).map(([title, text]) => (
+                    {item.diet && Object.entries(item.diet).map(([title, text]) => (
                         <div key={title}>
                             <h4 className="font-semibold">{title}</h4>
                             <p className="text-sm text-gray-700 whitespace-pre-wrap">{text}</p>
@@ -136,7 +136,7 @@ const EBPSCard = ({ item, onEdit, onDelete }: { item: EBPSInterventionItem, onEd
                     <CardTitle className="text-lg font-bold">Recommendations</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
-                    {Object.entries(item.recommendations).map(([title, points]) => (
+                    {item.recommendations && Object.entries(item.recommendations).map(([title, points]) => (
                         <div key={title}>
                             <h4 className="font-semibold">{title}</h4>
                             {Array.isArray(points) ? (

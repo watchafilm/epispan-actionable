@@ -170,11 +170,13 @@ const SimpleCard = ({ item, onEdit, onDelete }: { item: SymphonyItem | Reference
             <p className="text-4xl font-bold text-foreground mb-2">{item.value}</p>
             <p className="text-sm text-muted-foreground">{item.description}</p>
         </CardContent>
-        <CardFooter>
-            <Button asChild className="w-full bg-accent text-accent-foreground hover:bg-accent/90 transition-colors font-bold">
-            <Link href={item.buttonLink}>{item.buttonText}</Link>
-            </Button>
-      </CardFooter>
+        {item.buttonLink && item.buttonText && (
+          <CardFooter>
+              <Button asChild className="w-full bg-accent text-accent-foreground hover:bg-accent/90 transition-colors font-bold">
+              <Link href={item.buttonLink}>{item.buttonText}</Link>
+              </Button>
+        </CardFooter>
+        )}
     </Card>
 );
 

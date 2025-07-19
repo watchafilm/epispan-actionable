@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import type { BaseItem, Item } from '@/lib/definitions';
+import type { Item, FitnessAgeItem, EBPSInterventionItem } from '@/lib/definitions';
 import { saveItemAction } from '@/lib/actions';
 import { useToast } from '@/hooks/use-toast';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 import {
   Dialog,
@@ -37,16 +39,57 @@ import { getItemById } from '@/lib/data';
 interface ItemDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  item: BaseItem | null;
+  item: Item | null;
+  category: Item['category'];
 }
 
-export function ItemDialog({ open, onOpenChange, item }: ItemDialogProps) {
+const fitnessAgeSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  definition: z.string().min(1, 'Definition is required'),
+  relatedDisease: z.string().min(1, 'Related disease is required'),
+  diet: z.string().min(1, 'Diet is required'),
+  exercise: z.string().min(1, 'Exercise is required'),
+  lifestyle: z.string().min(1, 'Lifestyle is required'),
+});
+
+const ebpsSchema = z.object({
+    title: z.string().min(1, "Title is required"),
+    description: z.string().min(1, "Description is required"),
+    howShouldWeDo: z.string().min(1, "How should we do is required"),
+    clinicalOutcomes: z.string().min(1, "Clinical outcomes is required"),
+    diet: z.string().min(1, "Diet JSON is required").transform((val, ctx) => {
+        try { return JSON.parse(val) } catch (e) { 
+            ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Diet must be a valid JSON object."});
+            return z.NEVER;
+        }
+    }),
+    recommendations: z.string().min(1, "Recommendations JSON is required").transform((val, ctx) => {
+        try { return JSON.parse(val) } catch (e) { 
+            ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Recommendations must be a valid JSON object."});
+            return z.NEVER;
+        }
+    }),
+});
+
+// We don't use this directly but it's good for reference
+const simpleSchema = z.object({
+    title: z.string().min(1, 'Title is required'),
+    value: z.string().min(1, 'Value is required'),
+    description: z.string().min(1, 'Description is required'),
+    buttonText: z.string().optional(),
+    buttonLink: z.string().url('Must be a valid URL').or(z.literal('#')).optional(),
+});
+
+
+export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogProps) {
   const { toast } = useToast();
   const [fullItem, setFullItem] = useState<Item | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   
   const form = useForm({
+    // resolver: zodResolver(category === 'FitnessAge' ? fitnessAgeSchema : ebpsSchema),
     defaultValues: {
-      category: item?.category || 'FitnessAge',
+      category: category,
       title: '',
       // Common fields
       value: '',
@@ -62,38 +105,40 @@ export function ItemDialog({ open, onOpenChange, item }: ItemDialogProps) {
       // EBPS fields
       howShouldWeDo: '',
       clinicalOutcomes: '',
-      // Note: diet & recommendations for EBPS are handled as JSON strings in textareas
+      recommendations: '',
     },
-  });
-  
-  const watchedCategory = useWatch({
-    control: form.control,
-    name: "category"
   });
 
   useEffect(() => {
+    form.reset({ category: category });
     if (item?.id) {
-      getItemById(item.id).then(data => {
-        if (data) {
-          setFullItem(data);
-          const defaultValues: any = { category: data.category };
-          
-          Object.keys(data).forEach(key => {
-            const typedKey = key as keyof typeof data;
-            const value = data[typedKey];
-            if(typeof value === 'object' && value !== null){
-                defaultValues[typedKey] = JSON.stringify(value, null, 2);
-            } else {
-                defaultValues[typedKey] = value;
+        setIsLoading(true);
+        getItemById(item.id).then(data => {
+            if (data) {
+                setFullItem(data);
+                const defaultValues: any = { category: data.category };
+                
+                Object.keys(data).forEach(key => {
+                    const typedKey = key as keyof typeof data;
+                    const value = data[typedKey];
+                    if(key === 'diet' || key === 'recommendations'){
+                        if (typeof value === 'object' && value !== null) {
+                           defaultValues[typedKey] = JSON.stringify(value, null, 2);
+                        } else {
+                           defaultValues[typedKey] = value;
+                        }
+                    } else {
+                        defaultValues[typedKey] = value;
+                    }
+                });
+                form.reset(defaultValues);
             }
-          });
-          form.reset(defaultValues);
-        }
-      });
+            setIsLoading(false);
+        });
     } else {
       setFullItem(null);
       form.reset({
-        category: 'FitnessAge',
+        category: category,
         title: '',
         value: '',
         description: '',
@@ -106,18 +151,21 @@ export function ItemDialog({ open, onOpenChange, item }: ItemDialogProps) {
         lifestyle: '',
         howShouldWeDo: '',
         clinicalOutcomes: '',
+        recommendations: '',
       });
     }
-  }, [item, form]);
+  }, [item, category, open, form]);
 
 
   const onSubmit = async (values: any) => {
     const formData = new FormData();
     Object.keys(values).forEach(key => {
-        formData.append(key, values[key]);
+        if(values[key] !== undefined && values[key] !== null) {
+            formData.append(key, values[key]);
+        }
     });
     
-    const result = await saveItemAction(fullItem?.id || null, watchedCategory, formData);
+    const result = await saveItemAction(fullItem?.id || null, category, formData);
     
     if (result.success) {
       toast({
@@ -128,14 +176,14 @@ export function ItemDialog({ open, onOpenChange, item }: ItemDialogProps) {
     } else {
       toast({
         variant: 'destructive',
-        title: 'Error',
+        title: 'Error saving item',
         description: result.message,
       });
     }
   };
 
   const renderFormFields = () => {
-    switch (watchedCategory) {
+    switch (category) {
       case 'FitnessAge':
         return (
           <>
@@ -203,20 +251,21 @@ export function ItemDialog({ open, onOpenChange, item }: ItemDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{item ? 'Edit Item' : 'Add New Item'}</DialogTitle>
+          <DialogTitle>{item ? `Edit ${category}` : `Add New ${category}`}</DialogTitle>
           <DialogDescription>
-            {item ? 'Make changes to the item here.' : 'Add a new item to the list.'} Click save when you're done.
+            {item ? 'Make changes to the item here.' : `Add a new ${category} item.`} Click save when you're done.
           </DialogDescription>
         </DialogHeader>
+        { isLoading ? <p>Loading data...</p> : (
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto pr-4">
              <FormField
               control={form.control}
               name="category"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className='hidden'>
                   <FormLabel>Category</FormLabel>
-                   <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!!item}>
+                   <Select onValueChange={field.onChange} value={field.value} disabled>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a category" />
@@ -247,6 +296,7 @@ export function ItemDialog({ open, onOpenChange, item }: ItemDialogProps) {
             </DialogFooter>
           </form>
         </Form>
+        )}
       </DialogContent>
     </Dialog>
   );

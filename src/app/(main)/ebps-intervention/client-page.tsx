@@ -42,6 +42,7 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-12 items-start gap-x-6 p-4 rounded-md">
+        {dataKeys.length > 1 && (
         <div className="col-span-3 flex items-center gap-4">
           <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Click -&gt;</span>
           <Select value={selectedKey} onValueChange={setSelectedKey}>
@@ -57,6 +58,7 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
             </SelectContent>
           </Select>
         </div>
+        )}
         <div className="col-span-9 flex items-start gap-4">
            <h3 className="font-semibold text-[#f0c242] whitespace-nowrap pt-2">Description</h3>
            <p className="text-sm text-gray-700 whitespace-pre-wrap bg-[#fdf3da] p-4 rounded-lg">{selectedData.description}</p>
@@ -89,7 +91,7 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
                     <CardTitle className="text-lg font-bold">Diet</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
-                    {Object.entries(selectedData.diet).map(([title, text]) => (
+                    {selectedData.diet && Object.entries(selectedData.diet).map(([title, text]) => (
                         <div key={title}>
                             <h4 className="font-semibold">{title}</h4>
                             <p className="text-sm text-gray-700 whitespace-pre-wrap">{text}</p>
@@ -102,7 +104,7 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
                     <CardTitle className="text-lg font-bold">Recommendations</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
-                    {Object.entries(selectedData.recommendations).map(([title, points]) => (
+                    {selectedData.recommendations && Object.entries(selectedData.recommendations).map(([title, points]) => (
                         <div key={title}>
                             <h4 className="font-semibold">{title}</h4>
                             {Array.isArray(points) ? (
@@ -112,7 +114,7 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
                                     ))}
                                 </ul>
                             ) : (
-                                <p className="text-sm text-gray-700 mt-1 whitespace-pre-wrap">{points}</p>
+                                <p className="text-sm text-gray-700 mt-1 whitespace-pre-wrap">{points as string}</p>
                             )}
                         </div>
                     ))}

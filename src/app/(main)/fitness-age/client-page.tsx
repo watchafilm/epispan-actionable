@@ -48,6 +48,7 @@ export function FitnessAgeClientPage({ data }: FitnessAgeClientPageProps) {
   return (
     <div className="space-y-4">
       <div className="flex flex-col lg:flex-row lg:items-start lg:gap-6 space-y-4 lg:space-y-0">
+        {dataKeys.length > 1 && (
         <div className="flex items-center gap-4 flex-shrink-0">
           <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Click -&gt;</span>
           <Select value={selectedKey} onValueChange={setSelectedKey}>
@@ -63,9 +64,10 @@ export function FitnessAgeClientPage({ data }: FitnessAgeClientPageProps) {
             </SelectContent>
           </Select>
         </div>
+        )}
 
         <div className="flex-grow space-y-2">
-            <h3 className="font-semibold text-primary">Definition</h3>
+            <h3 className="font-semibold text-primary">{selectedData.title}</h3>
             <div className="p-3 bg-blue-100/60 rounded-lg h-full">
                 <p className="text-sm text-gray-700">{selectedData.definition}</p>
             </div>
@@ -90,7 +92,7 @@ export function FitnessAgeClientPage({ data }: FitnessAgeClientPageProps) {
             </CardHeader>
             <CardContent className="p-3 flex-grow">
               <ul className="space-y-2 text-sm text-foreground list-disc pl-5">
-                {section.value.split('\n\n').map((item, index) => (
+                {section.value && section.value.split('\n\n').map((item, index) => (
                     <li key={index} className="whitespace-pre-wrap">{item}</li>
                 ))}
               </ul>

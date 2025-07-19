@@ -69,14 +69,14 @@ export function FitnessAgeClientPage({ data }: FitnessAgeClientPageProps) {
         <div className="flex-grow space-y-2">
             <h3 className="font-semibold text-primary">{selectedData.title}</h3>
             <div className="p-3 bg-blue-100/60 rounded-lg h-full">
-                <div className="text-sm text-gray-700" dangerouslySetInnerHTML={{ __html: selectedData.definition }} />
+                <div className="text-sm text-gray-700 whitespace-pre-wrap">{selectedData.definition}</div>
             </div>
         </div>
 
         <div className="flex-grow space-y-2">
             <h3 className="font-semibold text-primary">Related disease</h3>
             <div className="p-3 bg-blue-100/60 rounded-lg h-full">
-                <div className="text-sm text-gray-700" dangerouslySetInnerHTML={{ __html: selectedData.relatedDisease }} />
+                <div className="text-sm text-gray-700 whitespace-pre-wrap">{selectedData.relatedDisease}</div>
             </div>
         </div>
       </div>
@@ -91,7 +91,7 @@ export function FitnessAgeClientPage({ data }: FitnessAgeClientPageProps) {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-3 flex-grow">
-               <div className="prose prose-sm max-w-none text-foreground" dangerouslySetInnerHTML={{ __html: section.value }} />
+               <div className="prose prose-sm max-w-none text-foreground whitespace-pre-wrap">{section.value}</div>
             </CardContent>
           </Card>
         ))}

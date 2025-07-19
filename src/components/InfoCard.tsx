@@ -22,7 +22,7 @@ export function InfoCard({ item }: { item: InfoCardItem }) {
       </CardHeader>
       <CardContent className="flex-grow">
         <p className="text-4xl font-bold text-foreground mb-2">{item.value}</p>
-        <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-wrap">{item.description}</div>
+        <div className="prose prose-sm max-w-none text-muted-foreground" dangerouslySetInnerHTML={{ __html: item.description }}/>
       </CardContent>
       <CardFooter>
         <Button asChild className="w-full bg-accent text-accent-foreground hover:bg-accent/90 transition-colors font-bold">

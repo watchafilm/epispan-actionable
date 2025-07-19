@@ -35,6 +35,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { getItemById } from '@/lib/data';
+import { TiptapEditor } from '@/components/TiptapEditor';
 
 interface ItemDialogProps {
   open: boolean;
@@ -123,7 +124,7 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
                            defaultValues[typedKey] = value;
                         }
                     } else {
-                        defaultValues[typedKey] = value;
+                        defaultValues[typedKey] = value || '';
                     }
                 });
                 form.reset(defaultValues);
@@ -183,19 +184,19 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
         return (
           <>
             <FormField control={form.control} name="definition" render={({ field }) => (
-                <FormItem><FormLabel>Definition</FormLabel><FormControl><Textarea {...field} rows={4} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Definition</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
             )}/>
             <FormField control={form.control} name="relatedDisease" render={({ field }) => (
-                <FormItem><FormLabel>Related Disease</FormLabel><FormControl><Textarea {...field} rows={4} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Related Disease</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
             )}/>
             <FormField control={form.control} name="diet" render={({ field }) => (
-                <FormItem><FormLabel>Diet</FormLabel><FormControl><Textarea {...field} rows={6} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Diet</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
             )}/>
             <FormField control={form.control} name="exercise" render={({ field }) => (
-                <FormItem><FormLabel>Exercise</FormLabel><FormControl><Textarea {...field} rows={4} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Exercise</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
             )}/>
             <FormField control={form.control} name="lifestyle" render={({ field }) => (
-                <FormItem><FormLabel>Lifestyle</FormLabel><FormControl><Textarea {...field} rows={4} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Lifestyle</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
             )}/>
           </>
         );
@@ -203,13 +204,13 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
         return (
             <>
                 <FormField control={form.control} name="description" render={({ field }) => (
-                    <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} rows={6} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Description</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
                 )}/>
                 <FormField control={form.control} name="howShouldWeDo" render={({ field }) => (
-                    <FormItem><FormLabel>How should we do?</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>How should we do?</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
                 )}/>
                 <FormField control={form.control} name="clinicalOutcomes" render={({ field }) => (
-                    <FormItem><FormLabel>Clinical Outcomes</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Clinical Outcomes</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
                 )}/>
                 <FormField control={form.control} name="diet" render={({ field }) => (
                     <FormItem><FormLabel>Diet (JSON)</FormLabel><FormControl><Textarea {...field} rows={8} placeholder='{ "key": "value" }' /></FormControl><FormMessage /></FormItem>
@@ -227,7 +228,7 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
                 <FormItem><FormLabel>Value</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
             <FormField control={form.control} name="description" render={({ field }) => (
-                <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} rows={4} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Description</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
             )}/>
             <FormField control={form.control} name="buttonText" render={({ field }) => (
                 <FormItem><FormLabel>Button Text</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
@@ -244,7 +245,7 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{item ? `Edit ${category}` : `Add New ${category}`}</DialogTitle>
           <DialogDescription>

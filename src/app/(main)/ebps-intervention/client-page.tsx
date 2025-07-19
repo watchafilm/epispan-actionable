@@ -71,7 +71,7 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
                 <span className="font-semibold text-center">Biomarkers Category</span>
             </div>
             <div className="bg-[#fdf3da] text-black p-3 flex items-center justify-center">
-                <span className="font-bold text-lg">{selectedData.clinicalOutcomes}</span>
+                <div className="font-bold text-lg prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: selectedData.clinicalOutcomes }}></div>
             </div>
         </div>
         <div className="grid grid-cols-2 gap-px border-2 border-[#f0c242] rounded-lg overflow-hidden bg-[#f0c242]">
@@ -79,7 +79,7 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
                 <span className="font-semibold text-center">How should we do ?</span>
             </div>
             <div className="bg-[#fdf3da] text-black p-3 flex items-center justify-center">
-                <span className="font-bold text-lg">{selectedData.howShouldWeDo}</span>
+                <div className="font-bold text-lg prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: selectedData.howShouldWeDo }}></div>
             </div>
         </div>
       </div>
@@ -94,7 +94,7 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
                     {selectedData.diet && Object.entries(selectedData.diet).map(([title, text]) => (
                         <div key={title}>
                             <h4 className="font-semibold">{title}</h4>
-                            <p className="text-sm text-gray-700 whitespace-pre-wrap">{text}</p>
+                            <div className="text-sm text-gray-700 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: text }}></div>
                         </div>
                     ))}
                 </CardContent>
@@ -108,13 +108,13 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
                         <div key={title}>
                             <h4 className="font-semibold">{title}</h4>
                             {Array.isArray(points) ? (
-                                <ul className="list-disc pl-5 space-y-1 mt-1">
+                                <ul className="list-disc pl-5 space-y-1 mt-1 prose prose-sm max-w-none">
                                     {points.map((point, index) => (
-                                        <li key={index} className="text-sm text-gray-700">{point}</li>
+                                        <li key={index} className="text-sm text-gray-700" dangerouslySetInnerHTML={{ __html: point }}></li>
                                     ))}
                                 </ul>
                             ) : (
-                                <p className="text-sm text-gray-700 mt-1 whitespace-pre-wrap">{points as string}</p>
+                                <div className="text-sm text-gray-700 mt-1 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: points as string }}></div>
                             )}
                         </div>
                     ))}

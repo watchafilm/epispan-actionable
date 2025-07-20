@@ -1,4 +1,4 @@
-import { getAllItems, getItems } from '@/lib/data';
+import { getItems } from '@/lib/data';
 import { logout, updateItemOrderAction } from '@/lib/actions';
 import { Button } from '@/components/ui/button';
 import { LogOut, PlusCircle } from 'lucide-react';
@@ -16,11 +16,11 @@ import { ReferenceItemDisplay } from '@/components/ReferenceItem';
 export const dynamic = 'force-dynamic';
 
 export default async function EditorDashboardPage() {
-  const allItems = (await getAllItems()) as Item[];
-  const fitnessItems = allItems.filter(item => item.category === 'FitnessAge') as FitnessAgeItem[];
-  const ebpsItems = allItems.filter(item => item.category === 'EBPS Intervention') as EBPSInterventionItem[];
-  const symphonyItems = allItems.filter(item => item.category === 'Symphony') as SymphonyAgeItem[];
-  const referenceItems = allItems.filter(item => item.category === 'Reference') as ReferenceItem[];
+  const allItems = (await getItems(null)) as Item[];
+  const fitnessItems = allItems.filter(item => item.category === 'FitnessAge').sort((a, b) => a.order - b.order) as FitnessAgeItem[];
+  const ebpsItems = allItems.filter(item => item.category === 'EBPS Intervention').sort((a, b) => a.order - b.order) as EBPSInterventionItem[];
+  const symphonyItems = allItems.filter(item => item.category === 'Symphony').sort((a, b) => a.order - b.order) as SymphonyAgeItem[];
+  const referenceItems = allItems.filter(item => item.category === 'Reference').sort((a, b) => a.order - b.order) as ReferenceItem[];
   
   const fitnessData = fitnessItems.reduce((acc, item) => {
     acc[item.title] = item;

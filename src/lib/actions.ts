@@ -104,6 +104,9 @@ export async function saveItemAction(id: string | null, category: Item['category
     const path = `/${category.toLowerCase().replace(/\s+/g, '-')}`;
     revalidatePath(path);
     if(path.startsWith('/')) revalidatePath(path.substring(1));
+    if (category === 'Reference') {
+        revalidatePath('/reference');
+    }
 
 
     return { success: true };
@@ -136,6 +139,9 @@ export async function deleteItemAction(id: string) {
 
     revalidatePath('/edit/dashboard');
     revalidatePath('/(main)', 'layout');
+    if (itemToDelete.category === 'Reference') {
+        revalidatePath('/reference');
+    }
     return { success: true };
   } catch (error) {
      console.error("Delete item error:", error);
@@ -175,6 +181,9 @@ export async function updateItemOrderAction(itemId: string, direction: 'up' | 'd
     const path = `/${category.toLowerCase().replace(/\s+/g, '-')}`;
     revalidatePath(path);
      if(path.startsWith('/')) revalidatePath(path.substring(1));
+    if (category === 'Reference') {
+        revalidatePath('/reference');
+    }
 
     return { success: true };
   } catch (error) {

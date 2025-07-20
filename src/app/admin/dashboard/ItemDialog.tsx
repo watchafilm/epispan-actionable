@@ -62,7 +62,14 @@ const ebpsSchema = z.object({
     recommendations: z.string().min(1, "Recommendations is required"),
 });
 
-const simpleSchema = z.object({
+const symphonySchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  diet: z.string().min(1, 'Diet is required'),
+  exercise: z.string().min(1, 'Exercise is required'),
+  lifestyle: z.string().min(1, 'Lifestyle is required'),
+});
+
+const referenceSchema = z.object({
     title: z.string().min(1, 'Title is required'),
     value: z.string().min(1, 'Value is required'),
     description: z.string().min(1, 'Description is required'),
@@ -201,8 +208,21 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
                     <FormItem><FormLabel>Recommendations</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
                 )}/>
             </>
-        )
+        );
       case 'Symphony':
+        return (
+          <>
+            <FormField control={form.control} name="diet" render={({ field }) => (
+                <FormItem><FormLabel>Diet</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
+            )}/>
+            <FormField control={form.control} name="exercise" render={({ field }) => (
+                <FormItem><FormLabel>Exercise</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
+            )}/>
+            <FormField control={form.control} name="lifestyle" render={({ field }) => (
+                <FormItem><FormLabel>Lifestyle</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
+            )}/>
+          </>
+        );
       case 'Reference':
         return (
           <>

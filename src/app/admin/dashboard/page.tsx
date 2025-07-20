@@ -2,12 +2,13 @@ import { getAllItems, getItems } from '@/lib/data';
 import { logout } from '@/lib/actions';
 import { Button } from '@/components/ui/button';
 import { LogOut, PlusCircle } from 'lucide-react';
-import type { Item, FitnessAgeItem, EBPSInterventionItem } from '@/lib/definitions';
+import type { Item, FitnessAgeItem, EBPSInterventionItem, SymphonyAgeItem } from '@/lib/definitions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Image from 'next/image';
 
 import { FitnessAgeClientPage } from '@/app/(main)/fitness-age/client-page';
 import { EBPSInterventionClientPage } from '@/app/(main)/ebps-intervention/client-page';
+import { SymphonyClientPage } from '@/app/(main)/symphony/client-page';
 import { AdminEditableWrapper } from './AdminEditableWrapper';
 import { ItemDialog } from './ItemDialog';
 
@@ -17,6 +18,7 @@ export default async function AdminDashboardPage() {
   const allItems = (await getAllItems()) as Item[];
   const fitnessItems = allItems.filter(item => item.category === 'FitnessAge') as FitnessAgeItem[];
   const ebpsItems = allItems.filter(item => item.category === 'EBPS Intervention') as EBPSInterventionItem[];
+  const symphonyItems = allItems.filter(item => item.category === 'Symphony') as SymphonyAgeItem[];
   
   const fitnessData = fitnessItems.reduce((acc, item) => {
     acc[item.title] = item;
@@ -27,6 +29,11 @@ export default async function AdminDashboardPage() {
     acc[item.title] = item;
     return acc;
   }, {} as Record<string, EBPSInterventionItem>);
+
+  const symphonyData = symphonyItems.reduce((acc, item) => {
+    acc[item.title] = item;
+    return acc;
+  }, {} as Record<string, SymphonyAgeItem>);
 
 
   return (
@@ -46,9 +53,10 @@ export default async function AdminDashboardPage() {
       </header>
       <main className="container mx-auto p-4 sm:p-6 lg:p-8">
         <Tabs defaultValue="fitness-age" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-4">
+          <TabsList className="grid w-full grid-cols-3 mb-4">
             <TabsTrigger value="fitness-age">FitnessAge</TabsTrigger>
             <TabsTrigger value="ebps-intervention">EBPS Intervention</TabsTrigger>
+            <TabsTrigger value="symphony">Symphony</TabsTrigger>
           </TabsList>
           
           <TabsContent value="fitness-age">
@@ -155,6 +163,57 @@ export default async function AdminDashboardPage() {
                   )}
                 </div>
              </div>
+          </TabsContent>
+
+          <TabsContent value="symphony">
+            <div className="border rounded-lg p-4 space-y-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold">Symphony Age Page</h2>
+                  <AdminEditableWrapper item={null} category="Symphony">
+                    <Button>
+                      <PlusCircle className="mr-2 h-4 w-4" />
+                      Add New Symphony Item
+                    </Button>
+                  </AdminEditableWrapper>
+              </div>
+
+              <div className="container mx-auto py-6 px-4 border rounded-md">
+                  <div className="grid grid-cols-12 items-center gap-x-6 mb-8">
+                    <div className="col-span-2 flex-shrink-0">
+                      <Image
+                        src="https://www.genfosis.com/images/Genfosis_Logo_PNG.webp"
+                        alt="Genfosis Logo"
+                        width={120}
+                        height={32}
+                        priority
+                      />
+                    </div>
+                    <div className="col-span-10">
+                      <div className="flex items-center gap-x-8">
+                        <h1 className="text-4xl font-bold text-[#D95B5B] tracking-wider">SymphonyAge</h1>
+                        <p className="text-[#D95B5B] text-sm max-w-2xl">
+                          By evaluating 130 biomarkers, this comprehensive approach enables precise assessment of aging across 11 distinct organ systems, providing detailed insights into their unique aging patterns.
+                        </p>
+                      </div>
+                      <hr className="h-1 bg-[#D95B5B] border-0 rounded mt-2" />
+                    </div>
+                  </div>
+
+                  {Object.keys(symphonyData).length > 0 ? (
+                    Object.values(symphonyData).map(item => (
+                      <AdminEditableWrapper key={item.id} item={item} category="Symphony">
+                        <div className="border-2 border-dashed border-gray-300 p-4 rounded-lg my-4 relative hover:border-red-500 transition-all">
+                          <SymphonyClientPage data={{ [item.title]: item }} />
+                        </div>
+                      </AdminEditableWrapper>
+                    ))
+                  ) : (
+                    <div className="text-center py-16 text-muted-foreground bg-muted/50 rounded-lg">
+                      <p>No Symphony items yet. Click "Add New" to create one.</p>
+                    </div>
+                  )}
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </main>

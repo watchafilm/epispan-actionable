@@ -20,14 +20,13 @@ export type EBPSInterventionItem = {
   recommendations: string;
 };
 
-export type SymphonyItem = {
+export type SymphonyAgeItem = {
   id: string;
   category: "Symphony";
   title: string;
-  value: string;
-  description: string;
-  buttonText: string;
-  buttonLink: string;
+  diet: string;
+  exercise: string;
+  lifestyle: string;
 };
 
 export type ReferenceItem = {
@@ -51,4 +50,4 @@ export type BaseItem = {
 
 
 // A union type of all possible specific items
-export type Item = FitnessAgeItem | EBPSInterventionItem | SymphonyItem | ReferenceItem;
+export type Item = FitnessAgeItem | EBPSInterventionItem | SymphonyAgeItem | ReferenceItem;

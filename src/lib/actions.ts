@@ -50,12 +50,19 @@ const ebpsSchema = z.object({
     recommendations: z.string().min(1, "Recommendations is required"),
 });
 
-const simpleSchema = z.object({
+const symphonySchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  diet: z.string().min(1, 'Diet is required'),
+  exercise: z.string().min(1, 'Exercise is required'),
+  lifestyle: z.string().min(1, 'Lifestyle is required'),
+});
+
+const referenceSchema = z.object({
     title: z.string().min(1, 'Title is required'),
     value: z.string().min(1, 'Value is required'),
     description: z.string().min(1, 'Description is required'),
-    buttonText: z.string().min(1, 'Button text is required'),
-    buttonLink: z.string().url('Must be a valid URL').or(z.literal('#')),
+    buttonText: z.string().optional(),
+    buttonLink: z.string().url('Must be a valid URL').or(z.literal('#')).optional(),
 });
 
 
@@ -64,18 +71,20 @@ export async function saveItemAction(id: string | null, category: Item['category
 
   let schema;
   switch (category) {
-      case 'FitnessAge':
-          schema = fitnessAgeSchema;
-          break;
-      case 'EBPS Intervention':
-          schema = ebpsSchema;
-          break;
-      case 'Symphony':
-      case 'Reference':
-          schema = simpleSchema;
-          break;
-      default:
-          return { success: false, message: 'Invalid category' };
+    case 'FitnessAge':
+      schema = fitnessAgeSchema;
+      break;
+    case 'EBPS Intervention':
+      schema = ebpsSchema;
+      break;
+    case 'Symphony':
+      schema = symphonySchema;
+      break;
+    case 'Reference':
+      schema = referenceSchema;
+      break;
+    default:
+      return { success: false, message: 'Invalid category' };
   }
   
   try {

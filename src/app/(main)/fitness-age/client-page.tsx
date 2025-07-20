@@ -34,7 +34,7 @@ export function FitnessAgeClientPage({ data }: FitnessAgeClientPageProps) {
      return (
         <div className="text-center py-16 text-muted-foreground bg-muted/50 rounded-lg">
           <h2 className="text-2xl font-semibold">No data available</h2>
-          <p>Please select an item or add data in the admin panel.</p>
+          <p>Please select an item or add data in the editor panel.</p>
         </div>
       )
   }
@@ -50,7 +50,7 @@ export function FitnessAgeClientPage({ data }: FitnessAgeClientPageProps) {
       <div className="flex flex-col lg:flex-row lg:items-start lg:gap-6 space-y-4 lg:space-y-0">
         {dataKeys.length > 1 && (
         <div className="flex items-center gap-4 flex-shrink-0">
-          <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Click -&gt;</span>
+          <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Click -></span>
           <Select value={selectedKey} onValueChange={setSelectedKey}>
             <SelectTrigger className="w-[200px] bg-card border-primary/50">
               <SelectValue placeholder="Select..." />

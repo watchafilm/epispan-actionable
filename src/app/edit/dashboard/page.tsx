@@ -9,12 +9,12 @@ import Image from 'next/image';
 import { FitnessAgeClientPage } from '@/app/(main)/fitness-age/client-page';
 import { EBPSInterventionClientPage } from '@/app/(main)/ebps-intervention/client-page';
 import { SymphonyClientPage } from '@/app/(main)/symphony/client-page';
-import { AdminEditableWrapper } from './AdminEditableWrapper';
+import { EditableWrapper } from './EditableWrapper';
 import { ItemDialog } from './ItemDialog';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AdminDashboardPage() {
+export default async function EditorDashboardPage() {
   const allItems = (await getAllItems()) as Item[];
   const fitnessItems = allItems.filter(item => item.category === 'FitnessAge') as FitnessAgeItem[];
   const ebpsItems = allItems.filter(item => item.category === 'EBPS Intervention') as EBPSInterventionItem[];
@@ -41,7 +41,7 @@ export default async function AdminDashboardPage() {
       <header className="bg-card border-b sticky top-0 z-40">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <h1 className="text-xl font-bold font-headline">Admin Dashboard</h1>
+            <h1 className="text-xl font-bold font-headline">Editor Dashboard</h1>
             <form action={logout}>
               <Button variant="outline" size="sm">
                 <LogOut className="mr-2 h-4 w-4" />
@@ -63,12 +63,12 @@ export default async function AdminDashboardPage() {
             <div className="border rounded-lg p-4 space-y-4">
               <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold">Fitness Age Page</h2>
-                 <AdminEditableWrapper item={null} category="FitnessAge">
+                 <EditableWrapper item={null} category="FitnessAge">
                     <Button>
                       <PlusCircle className="mr-2 h-4 w-4" />
                       Add New FitnessAge Item
                     </Button>
-                 </AdminEditableWrapper>
+                 </EditableWrapper>
               </div>
 
               <div className="container mx-auto py-6 px-4 border rounded-md">
@@ -99,11 +99,11 @@ export default async function AdminDashboardPage() {
 
                   {Object.keys(fitnessData).length > 0 ? (
                     Object.values(fitnessData).map(item => (
-                       <AdminEditableWrapper key={item.id} item={item} category="FitnessAge">
+                       <EditableWrapper key={item.id} item={item} category="FitnessAge">
                           <div className="border-2 border-dashed border-gray-300 p-4 rounded-lg my-4 relative hover:border-blue-500 transition-all">
                                <FitnessAgeClientPage data={{ [item.title]: item }} />
                           </div>
-                       </AdminEditableWrapper>
+                       </EditableWrapper>
                     ))
                   ) : (
                     <div className="text-center py-16 text-muted-foreground bg-muted/50 rounded-lg">
@@ -118,12 +118,12 @@ export default async function AdminDashboardPage() {
              <div className="border rounded-lg p-4 space-y-4">
                 <div className="flex justify-between items-center">
                   <h2 className="text-2xl font-bold">EBPS Intervention Page</h2>
-                   <AdminEditableWrapper item={null} category="EBPS Intervention">
+                   <EditableWrapper item={null} category="EBPS Intervention">
                       <Button>
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Add New EBPS Item
                       </Button>
-                   </AdminEditableWrapper>
+                   </EditableWrapper>
                 </div>
 
                 <div className="container mx-auto py-6 px-4 border rounded-md">
@@ -150,11 +150,11 @@ export default async function AdminDashboardPage() {
                   
                   {Object.keys(ebpsData).length > 0 ? (
                     Object.values(ebpsData).map(item => (
-                       <AdminEditableWrapper key={item.id} item={item} category="EBPS Intervention">
+                       <EditableWrapper key={item.id} item={item} category="EBPS Intervention">
                           <div className="border-2 border-dashed border-gray-300 p-4 rounded-lg my-4 relative hover:border-yellow-500 transition-all">
                                <EBPSInterventionClientPage data={{ [item.title]: item }} />
                           </div>
-                       </AdminEditableWrapper>
+                       </EditableWrapper>
                     ))
                    ) : (
                     <div className="text-center py-16 text-muted-foreground bg-muted/50 rounded-lg">
@@ -169,12 +169,12 @@ export default async function AdminDashboardPage() {
             <div className="border rounded-lg p-4 space-y-4">
               <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold">Symphony Age Page</h2>
-                  <AdminEditableWrapper item={null} category="Symphony">
+                  <EditableWrapper item={null} category="Symphony">
                     <Button>
                       <PlusCircle className="mr-2 h-4 w-4" />
                       Add New Symphony Item
                     </Button>
-                  </AdminEditableWrapper>
+                  </EditableWrapper>
               </div>
 
               <div className="container mx-auto py-6 px-4 border rounded-md">
@@ -201,11 +201,11 @@ export default async function AdminDashboardPage() {
 
                   {Object.keys(symphonyData).length > 0 ? (
                     Object.values(symphonyData).map(item => (
-                      <AdminEditableWrapper key={item.id} item={item} category="Symphony">
+                      <EditableWrapper key={item.id} item={item} category="Symphony">
                         <div className="border-2 border-dashed border-gray-300 p-4 rounded-lg my-4 relative hover:border-red-500 transition-all">
                           <SymphonyClientPage data={{ [item.title]: item }} />
                         </div>
-                      </AdminEditableWrapper>
+                      </EditableWrapper>
                     ))
                   ) : (
                     <div className="text-center py-16 text-muted-foreground bg-muted/50 rounded-lg">

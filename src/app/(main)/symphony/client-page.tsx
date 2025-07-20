@@ -26,7 +26,7 @@ export function SymphonyClientPage({ data }: SymphonyClientPageProps) {
     return (
       <div className="text-center py-16 text-muted-foreground bg-muted/50 rounded-lg">
         <h2 className="text-2xl font-semibold">No data available</h2>
-        <p>Please select an item or add data in the admin panel.</p>
+        <p>Please select an item or add data in the editor panel.</p>
       </div>
     );
   }

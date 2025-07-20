@@ -18,7 +18,7 @@ export default async function ReferencePage() {
       ) : (
         <div className="text-center py-16 text-muted-foreground bg-muted/50 rounded-lg">
           <h2 className="text-2xl font-semibold">No data available</h2>
-          <p>Please check back later or add data in the admin panel.</p>
+          <p>Please check back later or add data in the editor panel.</p>
         </div>
       )}
     </div>

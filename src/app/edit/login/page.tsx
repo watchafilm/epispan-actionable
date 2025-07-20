@@ -9,7 +9,7 @@ export default function LoginPage() {
     <div className="flex items-center justify-center min-h-screen bg-muted/50">
       <Card className="w-full max-w-sm mx-4">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Admin Login</CardTitle>
+          <CardTitle className="text-2xl font-bold">Editor Login</CardTitle>
           <CardDescription>Enter your credentials to access the dashboard</CardDescription>
         </CardHeader>
         <CardContent>

@@ -147,8 +147,11 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
 
 
   const onSubmit = async (values: any) => {
-    // For 'Reference', set title to be the first 50 chars of text
-    if (category === 'Reference' && values.text) {
+    // For 'Reference', if it's a new item, we pass the raw text to the action for splitting.
+    // If it's an update, the title is already set.
+    if (category === 'Reference' && !fullItem?.id && values.text) {
+        values.title = 'Multiple items'; // Placeholder, the action will handle individual titles
+    } else if (category === 'Reference' && values.text) {
         values.title = values.text.substring(0, 50) + '...';
     }
 
@@ -164,7 +167,7 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
     if (result.success) {
       toast({
         title: 'Success',
-        description: `Item ${fullItem?.id ? 'updated' : 'created'} successfully.`,
+        description: `Item(s) ${fullItem?.id ? 'updated' : 'created'} successfully.`,
       });
       onOpenChange(false);
     } else {
@@ -251,7 +254,17 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
                 )}
             />
             <FormField control={form.control} name="text" render={({ field }) => (
-                <FormItem><FormLabel>Reference Text</FormLabel><FormControl><Textarea {...field} rows={5} /></FormControl><FormMessage /></FormItem>
+                <FormItem>
+                    <FormLabel>Reference Text</FormLabel>
+                    <FormControl>
+                        <Textarea 
+                            {...field} 
+                            rows={item ? 5 : 10} 
+                            placeholder={item ? "Edit this reference." : "Add multiple references, one per line."}
+                        />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
             )}/>
           </>
         );

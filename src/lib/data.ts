@@ -5,11 +5,6 @@ import { db } from './firebase';
 import { collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc, writeBatch, runTransaction, query, where, orderBy } from 'firebase/firestore';
 import type { BaseItem, Item, FitnessAgeItem, EBPSInterventionItem, SymphonyAgeItem, ReferenceItem } from './definitions';
 
-type ReferenceSeed = {
-  text: string;
-  subCategory: 'Fitness Age' | 'OVERALL OmicAge' | 'SymphonyAge';
-};
-
 // --- Mock Data ---
 const MOCK_FITNESS_AGE_DATA: Omit<FitnessAgeItem, 'id' | 'category' | 'order'>[] = [
   {
@@ -60,7 +55,6 @@ const MOCK_EBPS_DATA: Omit<EBPSInterventionItem, 'id' | 'category' | 'order'>[] 
 const MOCK_SYMPHONY_DATA: Omit<SymphonyAgeItem, 'id' | 'category' | 'order'>[] = [
     {
         title: 'Musculoskeletal',
-        definition: '<p>The organ system age score is based on the evaluation of key biomarkers that reflect the health and function of the musculoskeletal system, which includes bones, muscles, and connective tissues.</p>',
         diet: '<ul><li>Vitamin D: Pan-sear salmon (15 mcg/100g) with soy-ginger glaze.</li><li>Collagen peptides: Simmer bone broth with ginger for soups.</li></ul>',
         exercise: '<ul><li>Resistance training.</li><li>General adults: Squats, lunges, and dumbbell rows 2-3 times/week.</li><li>Older adults: Chair squats and resistance band exercises to maintain strength safely.</li></ul>',
         lifestyle: '<p>Stress reduction: Chronic stress elevates inflammatory cytokines (IL-6), accelerating bone resorption (Rondanelli et al., 2021). Mindfulness or Tai Chi can help.</p>'
@@ -96,23 +90,10 @@ async function seedData() {
         if (existingItems.length === 0 && data.length > 0) {
             console.log(`Seeding data for category: ${category}`);
             batchHasWrites = true;
-            if (type === 'Reference') {
-                 (data as ReferenceSeed[]).forEach((item, index) => {
-                    const docRef = doc(collection(db, 'items'));
-                    batch.set(docRef, { 
-                        text: item.text,
-                        subCategory: item.subCategory,
-                        category: 'Reference', 
-                        order: index,
-                        title: item.text.substring(0, 50) + '...'
-                    });
-                });
-            } else {
-                data.forEach((item, index) => {
-                    const docRef = doc(collection(db, 'items'));
-                    batch.set(docRef, { ...item, category: type, order: index });
-                });
-            }
+            data.forEach((item, index) => {
+                const docRef = doc(collection(db, 'items'));
+                batch.set(docRef, { ...item, category: type, order: index });
+            });
         }
     }
 
@@ -186,7 +167,7 @@ export async function getItems(category: Item['category'] | null): Promise<Item[
         return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Item));
     } catch (error: any) {
         if (error.code === 'failed-precondition') {
-          console.warn(`Firestore index not found for category: ${category || 'all'}. Falling back to client-side sorting.`);
+          console.warn(`Firestore index not found for query. Falling back to client-side sorting.`);
           
           let fallbackQuery;
           if (category) {
@@ -200,6 +181,10 @@ export async function getItems(category: Item['category'] | null): Promise<Item[
           
           // Sort manually
           items.sort((a, b) => {
+            if (category) { // If filtering by category, just sort by order
+                 return (a.order ?? 0) - (b.order ?? 0);
+            }
+            // if no category filter, sort by category first, then order
             if (a.category !== b.category) {
                 return a.category.localeCompare(b.category);
             }
@@ -238,6 +223,28 @@ export async function addItem(itemData: Omit<Item, 'id' | 'order'> & {order?: nu
     return { id: docRef.id, ...newItem };
 }
 
+export async function addMultipleItems(itemsData: Omit<Item, 'id' | 'order'>[]) {
+    if (itemsData.length === 0) return;
+
+    const category = itemsData[0].category;
+    
+    await runTransaction(db, async (transaction) => {
+        const itemsInCategory = await getItems(category);
+        let maxOrder = itemsInCategory.reduce((max, item) => Math.max(max, item.order ?? -1), -1);
+        
+        for (const itemData of itemsData) {
+            maxOrder++;
+            const newItem = {
+                ...itemData,
+                order: maxOrder,
+            };
+            const newDocRef = doc(itemsCollection);
+            transaction.set(newDocRef, newItem);
+        }
+    });
+}
+
+
 export async function updateItem(id: string, updates: Partial<Omit<Item, 'id'>>) {
     const docRef = doc(db, 'items', id);
     await updateDoc(docRef, updates);
@@ -265,8 +272,3 @@ export async function deleteItem(id: string) {
     await deleteDoc(docRef);
     return { success: true };
 }
-
-
-    
-
-    

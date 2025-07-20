@@ -4,8 +4,8 @@ import { z } from 'zod';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { addItem, updateItem, deleteItem, getItems, updateItemsOrder } from './data';
-import type { Item } from './definitions';
+import { addItem, updateItem, deleteItem, getItems, updateItemsOrder, addMultipleItems } from './data';
+import type { Item, ReferenceItem } from './definitions';
 
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'genfosis';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'sisfogen';
@@ -71,6 +71,34 @@ const referenceSchema = baseSchema.extend({
 
 export async function saveItemAction(id: string | null, category: Item['category'], formData: FormData) {
   const data = Object.fromEntries(formData.entries());
+
+  // Handle bulk-add for References
+  if (category === 'Reference' && !id && typeof data.text === 'string') {
+    const referenceTexts = data.text.split('\n').map(t => t.trim()).filter(t => t.length > 0);
+    const subCategory = data.subCategory as string;
+    
+    if (!subCategory || subCategory.trim() === '') {
+        return { success: false, message: 'Sub-category is required.' };
+    }
+
+    const itemsToAdd: Omit<ReferenceItem, 'id' | 'order'>[] = referenceTexts.map(text => ({
+        text,
+        subCategory: subCategory as ReferenceItem['subCategory'],
+        category: 'Reference',
+        title: text.substring(0, 50) + '...',
+    }));
+
+    try {
+        await addMultipleItems(itemsToAdd);
+        revalidatePath('/edit/dashboard');
+        revalidatePath('/reference');
+        return { success: true };
+    } catch (error) {
+        console.error("Bulk add error:", error);
+        return { success: false, message: 'An unexpected error occurred during bulk add.' };
+    }
+  }
+
 
   let schema;
   switch (category) {

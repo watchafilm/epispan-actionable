@@ -37,7 +37,7 @@ export type ReferenceItem = {
   category: 'Reference';
   title: string; // Will be auto-generated from text
   text: string;
-  subCategory: 'Fitness Age' | 'OVERALL OmicAge' | 'SymphonyAge';
+  subCategory: string; // Allow any string for flexibility
   order: number;
 };
 

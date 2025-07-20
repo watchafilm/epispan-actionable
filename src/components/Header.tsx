@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/fitness-age', label: 'FitnessAge' },
-  { href: '/symphony', label: 'Symphony' },
+  { href: '/symphony', label: 'SymphonyAge' },
   { href: '/ebps-intervention', label: 'EBPS Intervention' },
   { href: '/reference', label: 'Reference' },
 ];

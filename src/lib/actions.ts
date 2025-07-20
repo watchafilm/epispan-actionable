@@ -21,15 +21,15 @@ export async function login(formData: FormData) {
       maxAge: 60 * 60 * 24 * 7, // One week
       path: '/',
     });
-    redirect('/admin/dashboard');
+    redirect('/edit/dashboard');
   } else {
-    redirect('/admin/login?error=InvalidCredentials');
+    redirect('/edit/login?error=InvalidCredentials');
   }
 }
 
 export async function logout() {
   cookies().delete('auth');
-  redirect('/admin/login');
+  redirect('/edit/login');
 }
 
 const fitnessAgeSchema = z.object({
@@ -97,7 +97,7 @@ export async function saveItemAction(id: string | null, category: Item['category
       await addItem(finalData);
     }
 
-    revalidatePath('/admin/dashboard');
+    revalidatePath('/edit/dashboard');
     const path = `/${category.toLowerCase().replace(/\s+/g, '-')}`;
     revalidatePath(path);
     if(path.startsWith('/')) revalidatePath(path.substring(1));
@@ -116,7 +116,7 @@ export async function saveItemAction(id: string | null, category: Item['category
 export async function deleteItemAction(id: string) {
   try {
     await deleteItem(id);
-    revalidatePath('/admin/dashboard');
+    revalidatePath('/edit/dashboard');
     revalidatePath('/(main)', 'layout');
     return { success: true };
   } catch (error) {

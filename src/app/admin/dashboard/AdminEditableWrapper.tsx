@@ -1,118 +1,125 @@
-'use client';
+'use server';
 
-import { useState } from 'react';
-import type { BaseItem, Item } from '@/lib/definitions';
-import { Button } from '@/components/ui/button';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Edit, PlusCircle, Trash2 } from 'lucide-react';
-import { ItemDialog } from './ItemDialog';
-import { deleteItemAction } from '@/lib/actions';
-import { useToast } from '@/hooks/use-toast';
+import { z } from 'zod';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
+import { addItem, updateItem, deleteItem } from './data';
+import type { Item } from './definitions';
 
-interface AdminEditableWrapperProps {
-  item: Item | null;
-  category: Item['category'];
-  children: React.ReactNode;
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'genfosis';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'sisfogen';
+
+export async function login(formData: FormData) {
+  const username = formData.get('username');
+  const password = formData.get('password');
+
+  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    cookies().set('auth', ADMIN_PASSWORD, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24 * 7, // One week
+      path: '/',
+    });
+    redirect('/edit/dashboard');
+  } else {
+    redirect('/edit/login?error=InvalidCredentials');
+  }
 }
 
-export function AdminEditableWrapper({ item, category, children }: AdminEditableWrapperProps) {
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
-  const { toast } = useToast();
+export async function logout() {
+  cookies().delete('auth');
+  redirect('/edit/login');
+}
 
-  const handleEdit = () => {
-    setDialogOpen(true);
-  };
+const fitnessAgeSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  definition: z.string().min(1, 'Definition is required'),
+  relatedDisease: z.string().min(1, 'Related disease is required'),
+  diet: z.string().min(1, 'Diet is required'),
+  exercise: z.string().min(1, 'Exercise is required'),
+  lifestyle: z.string().min(1, 'Lifestyle is required'),
+});
 
-  const handleDelete = () => {
-    setDeleteAlertOpen(true);
-  };
+const ebpsSchema = z.object({
+    title: z.string().min(1, "Title is required"),
+    description: z.string().min(1, "Description is required"),
+    howShouldWeDo: z.string().min(1, "How should we do is required"),
+    biomarkersCategory: z.string().min(1, "Biomarkers category is required"),
+    diet: z.string().min(1, "Diet is required"),
+    recommendations: z.string().min(1, "Recommendations is required"),
+});
 
-  const confirmDelete = async () => {
-    if (item) {
-      const result = await deleteItemAction(item.id);
-      if (result.success) {
-        toast({
-          title: 'Success',
-          description: 'Item deleted successfully.',
-        });
-      } else {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: result.message,
-        });
-      }
-    }
-    setDeleteAlertOpen(false);
-  };
+const symphonySchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  diet: z.string().min(1, 'Diet is required'),
+  exercise: z.string().min(1, 'Exercise is required'),
+  lifestyle: z.string().min(1, 'Lifestyle is required'),
+});
 
-  if (!item) {
-    // This is for the "Add New" button
-    return (
-      <>
-        <div onClick={handleEdit}>{children}</div>
-        <ItemDialog
-            open={dialogOpen}
-            onOpenChange={setDialogOpen}
-            item={null}
-            category={category}
-        />
-      </>
-    );
+const referenceSchema = z.object({
+    title: z.string().min(1, 'Title is required'),
+    value: z.string().min(1, 'Value is required'),
+    description: z.string().min(1, 'Description is required'),
+    buttonText: z.string().optional(),
+    buttonLink: z.string().url('Must be a valid URL').or(z.literal('#')).optional(),
+});
+
+
+export async function saveItemAction(id: string | null, category: Item['category'], formData: FormData) {
+  const data = Object.fromEntries(formData.entries());
+
+  let schema;
+  switch (category) {
+    case 'FitnessAge':
+      schema = fitnessAgeSchema;
+      break;
+    case 'EBPS Intervention':
+      schema = ebpsSchema;
+      break;
+    case 'Symphony':
+      schema = symphonySchema;
+      break;
+    case 'Reference':
+      schema = referenceSchema;
+      break;
+    default:
+      return { success: false, message: 'Invalid category' };
   }
+  
+  try {
+    const validatedData = schema.parse(data);
+    const finalData = { ...validatedData, category };
 
-  return (
-    <>
-      <div className="relative group">
-        <div className="absolute top-2 right-2 z-10 flex gap-1 bg-background/50 backdrop-blur-sm p-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
-          <Button variant="outline" size="icon" onClick={handleEdit} className="h-8 w-8">
-            <Edit className="h-4 w-4" />
-            <span className="sr-only">Edit</span>
-          </Button>
-          <Button variant="destructive" size="icon" onClick={handleDelete} className="h-8 w-8">
-            <Trash2 className="h-4 w-4" />
-            <span className="sr-only">Delete</span>
-          </Button>
-        </div>
-        {children}
-      </div>
+    if (id) {
+      await updateItem(id, finalData);
+    } else {
+      await addItem(finalData);
+    }
 
-      <ItemDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        item={item}
-        category={category}
-      />
+    revalidatePath('/edit/dashboard');
+    const path = `/${category.toLowerCase().replace(/\s+/g, '-')}`;
+    revalidatePath(path);
+    if(path.startsWith('/')) revalidatePath(path.substring(1));
 
-      <AlertDialog open={deleteAlertOpen} onOpenChange={setDeleteAlertOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the item "{item?.title}".
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
-  );
+
+    return { success: true };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, message: 'Validation failed: ' + error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ') };
+    }
+    console.error("Save item error:", error);
+    return { success: false, message: 'An unexpected error occurred.' };
+  }
+}
+
+export async function deleteItemAction(id: string) {
+  try {
+    await deleteItem(id);
+    revalidatePath('/edit/dashboard');
+    revalidatePath('/(main)', 'layout');
+    return { success: true };
+  } catch (error) {
+     return { success: false, message: 'Failed to delete item.' };
+  }
 }

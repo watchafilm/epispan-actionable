@@ -1,47 +1,35 @@
-'use client';
+'use server';
 
-import { useState, useEffect } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
-import type { Item, FitnessAgeItem, EBPSInterventionItem } from '@/lib/definitions';
-import { saveItemAction } from '@/lib/actions';
-import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
+import { addItem, updateItem, deleteItem } from './data';
+import type { Item } from './definitions';
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { getItemById } from '@/lib/data';
-import { TiptapEditor } from '@/components/TiptapEditor';
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'genfosis';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'sisfogen';
 
-interface ItemDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  item: Item | null;
-  category: Item['category'];
+export async function login(formData: FormData) {
+  const username = formData.get('username');
+  const password = formData.get('password');
+
+  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    cookies().set('auth', ADMIN_PASSWORD, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24 * 7, // One week
+      path: '/',
+    });
+    redirect('/edit/dashboard');
+  } else {
+    redirect('/edit/login?error=InvalidCredentials');
+  }
+}
+
+export async function logout() {
+  cookies().delete('auth');
+  redirect('/edit/login');
 }
 
 const fitnessAgeSchema = z.object({
@@ -78,224 +66,60 @@ const referenceSchema = z.object({
 });
 
 
-export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogProps) {
-  const { toast } = useToast();
-  const [fullItem, setFullItem] = useState<Item | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+export async function saveItemAction(id: string | null, category: Item['category'], formData: FormData) {
+  const data = Object.fromEntries(formData.entries());
+
+  let schema;
+  switch (category) {
+    case 'FitnessAge':
+      schema = fitnessAgeSchema;
+      break;
+    case 'EBPS Intervention':
+      schema = ebpsSchema;
+      break;
+    case 'Symphony':
+      schema = symphonySchema;
+      break;
+    case 'Reference':
+      schema = referenceSchema;
+      break;
+    default:
+      return { success: false, message: 'Invalid category' };
+  }
   
-  const form = useForm({
-    defaultValues: {
-      category: category,
-      title: '',
-      value: '',
-      description: '',
-      buttonText: '',
-      buttonLink: '#',
-      definition: '',
-      relatedDisease: '',
-      diet: '',
-      exercise: '',
-      lifestyle: '',
-      howShouldWeDo: '',
-      biomarkersCategory: '',
-      recommendations: '',
-    },
-  });
+  try {
+    const validatedData = schema.parse(data);
+    const finalData = { ...validatedData, category };
 
-  useEffect(() => {
-    form.reset({ category: category });
-    if (item?.id) {
-        setIsLoading(true);
-        getItemById(item.id).then(data => {
-            if (data) {
-                setFullItem(data);
-                const defaultValues: any = { category: data.category };
-                
-                Object.keys(data).forEach(key => {
-                    const typedKey = key as keyof typeof data;
-                    const value = data[typedKey];
-                    defaultValues[typedKey] = value || '';
-                });
-                form.reset(defaultValues);
-            }
-            setIsLoading(false);
-        });
+    if (id) {
+      await updateItem(id, finalData);
     } else {
-      setFullItem(null);
-      form.reset({
-        category: category,
-        title: '',
-        value: '',
-        description: '',
-        buttonText: '',
-        buttonLink: '#',
-        definition: '',
-        relatedDisease: '',
-        diet: '',
-        exercise: '',
-        lifestyle: '',
-        howShouldWeDo: '',
-        biomarkersCategory: '',
-        recommendations: '',
-      });
+      await addItem(finalData);
     }
-  }, [item, category, open, form]);
+
+    revalidatePath('/edit/dashboard');
+    const path = `/${category.toLowerCase().replace(/\s+/g, '-')}`;
+    revalidatePath(path);
+    if(path.startsWith('/')) revalidatePath(path.substring(1));
 
 
-  const onSubmit = async (values: any) => {
-    const formData = new FormData();
-    Object.keys(values).forEach(key => {
-        if(values[key] !== undefined && values[key] !== null) {
-            formData.append(key, values[key]);
-        }
-    });
-    
-    const result = await saveItemAction(fullItem?.id || null, category, formData);
-    
-    if (result.success) {
-      toast({
-        title: 'Success',
-        description: `Item ${fullItem?.id ? 'updated' : 'created'} successfully.`,
-      });
-      onOpenChange(false);
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Error saving item',
-        description: result.message,
-      });
+    return { success: true };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, message: 'Validation failed: ' + error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ') };
     }
-  };
+    console.error("Save item error:", error);
+    return { success: false, message: 'An unexpected error occurred.' };
+  }
+}
 
-  const renderFormFields = () => {
-    switch (category) {
-      case 'FitnessAge':
-        return (
-          <>
-            <FormField control={form.control} name="definition" render={({ field }) => (
-                <FormItem><FormLabel>Definition</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
-            )}/>
-            <FormField control={form.control} name="relatedDisease" render={({ field }) => (
-                <FormItem><FormLabel>Related Disease</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
-            )}/>
-            <FormField control={form.control} name="diet" render={({ field }) => (
-                <FormItem><FormLabel>Diet</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
-            )}/>
-            <FormField control={form.control} name="exercise" render={({ field }) => (
-                <FormItem><FormLabel>Exercise</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
-            )}/>
-            <FormField control={form.control} name="lifestyle" render={({ field }) => (
-                <FormItem><FormLabel>Lifestyle</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
-            )}/>
-          </>
-        );
-      case 'EBPS Intervention':
-        return (
-            <>
-                <FormField control={form.control} name="description" render={({ field }) => (
-                    <FormItem><FormLabel>Description</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
-                )}/>
-                <FormField control={form.control} name="howShouldWeDo" render={({ field }) => (
-                    <FormItem><FormLabel>How should we do?</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
-                )}/>
-                <FormField control={form.control} name="biomarkersCategory" render={({ field }) => (
-                    <FormItem><FormLabel>Biomarkers Category</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
-                )}/>
-                <FormField control={form.control} name="diet" render={({ field }) => (
-                    <FormItem><FormLabel>Diet</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
-                )}/>
-                <FormField control={form.control} name="recommendations" render={({ field }) => (
-                    <FormItem><FormLabel>Recommendations</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
-                )}/>
-            </>
-        );
-      case 'Symphony':
-        return (
-          <>
-            <FormField control={form.control} name="diet" render={({ field }) => (
-                <FormItem><FormLabel>Diet</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
-            )}/>
-            <FormField control={form.control} name="exercise" render={({ field }) => (
-                <FormItem><FormLabel>Exercise</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
-            )}/>
-            <FormField control={form.control} name="lifestyle" render={({ field }) => (
-                <FormItem><FormLabel>Lifestyle</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
-            )}/>
-          </>
-        );
-      case 'Reference':
-        return (
-          <>
-            <FormField control={form.control} name="value" render={({ field }) => (
-                <FormItem><FormLabel>Value</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )}/>
-            <FormField control={form.control} name="description" render={({ field }) => (
-                <FormItem><FormLabel>Description</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
-            )}/>
-            <FormField control={form.control} name="buttonText" render={({ field }) => (
-                <FormItem><FormLabel>Button Text</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )}/>
-            <FormField control={form.control} name="buttonLink" render={({ field }) => (
-                <FormItem><FormLabel>Button Link</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )}/>
-          </>
-        );
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>{item ? `Edit ${category}` : `Add New ${category}`}</DialogTitle>
-          <DialogDescription>
-            {item ? 'Make changes to the item here.' : `Add a new ${category} item.`} Click save when you're done.
-          </DialogDescription>
-        </DialogHeader>
-        { isLoading ? <p>Loading data...</p> : (
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto pr-4">
-             <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem className='hidden'>
-                  <FormLabel>Category</FormLabel>
-                   <Select onValueChange={field.onChange} value={field.value} disabled>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="FitnessAge">FitnessAge</SelectItem>
-                      <SelectItem value="EBPS Intervention">EBPS Intervention</SelectItem>
-                      <SelectItem value="Symphony">Symphony</SelectItem>
-                      <SelectItem value="Reference">Reference</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-             <FormField control={form.control} name="title" render={({ field }) => (
-                <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )}/>
-
-            {renderFormFields()}
-
-            <DialogFooter className="sticky bottom-0 bg-background py-4">
-              <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? 'Saving...' : 'Save Changes'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-        )}
-      </DialogContent>
-    </Dialog>
-  );
+export async function deleteItemAction(id: string) {
+  try {
+    await deleteItem(id);
+    revalidatePath('/edit/dashboard');
+    revalidatePath('/(main)', 'layout');
+    return { success: true };
+  } catch (error) {
+     return { success: false, message: 'Failed to delete item.' };
+  }
 }

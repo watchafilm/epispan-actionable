@@ -8,21 +8,21 @@ export function middleware(request: NextRequest) {
 
   const isLoggedIn = request.cookies.get('auth')?.value === ADMIN_PASSWORD;
 
-  if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
+  if (pathname.startsWith('/edit') && !pathname.startsWith('/edit/login')) {
     if (!isLoggedIn) {
-      return NextResponse.redirect(new URL('/admin/login', request.url));
+      return NextResponse.redirect(new URL('/edit/login', request.url));
     }
   }
 
-  if (pathname === '/admin/login') {
+  if (pathname === '/edit/login') {
     if (isLoggedIn) {
-      return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+      return NextResponse.redirect(new URL('/edit/dashboard', request.url));
     }
   }
 
-  // Redirect root admin path to dashboard if logged in
-  if (pathname === '/admin' && isLoggedIn) {
-      return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+  // Redirect root edit path to dashboard if logged in
+  if (pathname === '/edit' && isLoggedIn) {
+      return NextResponse.redirect(new URL('/edit/dashboard', request.url));
   }
 
 
@@ -30,5 +30,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/edit/:path*'],
 };

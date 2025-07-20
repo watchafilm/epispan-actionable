@@ -52,6 +52,8 @@ const MOCK_EBPS_DATA: Omit<EBPSInterventionItem, 'id' | 'category'>[] = [
 const MOCK_SYMPHONY_DATA: Omit<SymphonyAgeItem, 'id' | 'category'>[] = [
     {
         title: 'Musculoskeletal',
+        definition: '<p>The musculoskeletal system provides form, support, stability, and movement to the body. It is made up of the bones of the skeleton, muscles, cartilage, tendons, ligaments, joints, and other connective tissue that supports and binds tissues and organs together.</p>',
+        relatedDisease: '<p>Osteoporosis, Sarcopenia, Arthritis</p>',
         diet: '<ul><li>Vitamin D: Pan-sear salmon (15 mcg/100g) with soy-ginger glaze.</li><li>Collagen peptides: Simmer bone broth with ginger for soups.</li></ul>',
         exercise: '<ul><li>Resistance training.</li><li>General adults: Squats, lunges, and dumbbell rows 2-3 times/week.</li><li>Older adults: Chair squats and resistance band exercises to maintain strength safely.</li></ul>',
         lifestyle: '<p>Stress reduction: Chronic stress elevates inflammatory cytokines (IL-6), accelerating bone resorption (Rondanelli et al., 2021). Mindfulness or Tai Chi can help.</p>'

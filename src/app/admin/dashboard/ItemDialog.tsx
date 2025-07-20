@@ -64,6 +64,8 @@ const ebpsSchema = z.object({
 
 const symphonySchema = z.object({
   title: z.string().min(1, 'Title is required'),
+  definition: z.string().min(1, 'Definition is required'),
+  relatedDisease: z.string().min(1, 'Related disease is required'),
   diet: z.string().min(1, 'Diet is required'),
   exercise: z.string().min(1, 'Exercise is required'),
   lifestyle: z.string().min(1, 'Lifestyle is required'),
@@ -212,6 +214,12 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
       case 'Symphony':
         return (
           <>
+            <FormField control={form.control} name="definition" render={({ field }) => (
+                <FormItem><FormLabel>Definition</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
+            )}/>
+            <FormField control={form.control} name="relatedDisease" render={({ field }) => (
+                <FormItem><FormLabel>Related Disease</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
+            )}/>
             <FormField control={form.control} name="diet" render={({ field }) => (
                 <FormItem><FormLabel>Diet</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
             )}/>

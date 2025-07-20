@@ -42,9 +42,9 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-12 items-start gap-x-6 p-4 rounded-md">
-        {dataKeys.length > 1 && (
+        {dataKeys.length > 0 && (
         <div className="col-span-3 flex items-center gap-4">
-          <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Click -&gt;</span>
+          <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Click -></span>
           <Select value={selectedKey} onValueChange={setSelectedKey}>
             <SelectTrigger className="w-full bg-transparent text-black border-[#f0c242]">
               <SelectValue placeholder="Select..." />

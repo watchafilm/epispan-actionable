@@ -40,7 +40,7 @@ export function SymphonyClientPage({ data }: SymphonyClientPageProps) {
   return (
     <div className="space-y-4">
        <div className="flex flex-col lg:flex-row lg:items-start lg:gap-6 space-y-4 lg:space-y-0">
-        {dataKeys.length > 1 && (
+        {dataKeys.length > 0 && (
         <div className="flex items-center gap-4 flex-shrink-0">
           <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Click -&gt;</span>
           <Select value={selectedKey} onValueChange={setSelectedKey}>
@@ -62,13 +62,6 @@ export function SymphonyClientPage({ data }: SymphonyClientPageProps) {
             <h3 className="font-semibold text-[#D95B5B]">{selectedData.title}</h3>
             <div className="p-3 bg-red-100/60 rounded-lg h-full">
                 <div className="text-sm text-gray-700 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: selectedData.definition }} />
-            </div>
-        </div>
-
-        <div className="flex-grow space-y-2">
-            <h3 className="font-semibold text-[#D95B5B]">Related Disease</h3>
-            <div className="p-3 bg-red-100/60 rounded-lg h-full">
-                <div className="text-sm text-gray-700 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: selectedData.relatedDisease }} />
             </div>
         </div>
       </div>

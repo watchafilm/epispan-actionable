@@ -4,38 +4,38 @@ import type { BaseItem, Item, FitnessAgeItem, EBPSInterventionItem, SymphonyAgeI
 
 // --- Mock Data ---
 const MOCK_FITNESS_AGE_DATA: Omit<FitnessAgeItem, 'id' | 'category'>[] = [
-    {
-      title: "Grip Strength",
-      definition: "<p>The highest reading from either hand, measured in kilograms. It indicates overall body strength and has been linked to a person’s biological age acceleration, risk of all-cause mortality, and future functional decline.</p>",
-      relatedDisease: "<p>Frailty, sarcopenia, risk of falls, overall mortality.</p>",
-      diet: "<ul><li>Adequate protein intake: ≥1.0-1.2 g/kg body weight/day</li><li>≥20 g high-quality protein per meal, including leucine-rich sources such as eggs, seeds, oats, and legumes.</li><li>Vitamin D: both of male and female<br>19-70 years: 15 µg/day<br>>70 years: 20 µg/day</li><li>Antioxidants: Vitamin C 500-1000 mg/day, Vitamin E 15 mg/day.</li></ul>",
-      exercise: "<ul><li>Progressive Resistance training for hand/forearm: 2-3 sessions/week, focusing on major lower limb muscles (e.g., squats, leg press), moderate-to-high intensity, 8-12 reps/set, 2-3 sets.</li><li>Functional gripping excercises, Regular physical activity: Incorporate into daily tasks (carrying groceries, opening jars) and structured exercise.</li></ul>",
-      lifestyle: "<p>Smoking cessation, Limit alcohol intake, Maintain healthy weight and manage chronic disease.</p>"
-    },
-    {
-      title: "VO2MAX",
-      definition: "<p>The maximum rate at which your heart, lungs, and muscles can effectively use oxygen during exercise. Higher VO₂max levels indicate greater cardiorespiratory fitness and endurance. It is a key indicator of cardiovascular health and is strongly linked to a reduced risk of various chronic diseases.</p>",
-      relatedDisease: "<p>Cardiovascular fitness, endurance, longevity, risk of heart disease.</p>",
-      diet: "<ul><li>Dietary nitrate: 5-16.8 mmol (~300-1041 mg) nitrate, taken 2-3 hours before exercise; can be achieved with ~250-500 g of leafy/root vegetables or as a supplement. Avoid mouthwash before use.</li><li>Iron: Dose varies by deficiency status; in studies, 100 mg elemental iron daily for 6-8 weeks in iron-deficient, non-anemic women improved endurance performance (not VO2Max in all cases). Dietary References intakes (DRIs): Males > 19-70 Ys: 8 mg/d, Femakes > 19-50 Ys: 18 mg/d, > 50-70 Ys: 8 mg/d</li><li>Antioxidants: Vitamin C 500-1000 mg/day, Vitamin E 15 mg/day.</li></ul>",
-      exercise: "<ul><li>High-intensity interval (HIIT): Intervals at 85-95% HRmax, e.g., 4x4 min with 3 min recovery, 2-3 times/week for ≥6 weeks.</li><li>Moderate continuous endurance training.</li><li>Tailored training: Aerobic cardio (running, cycling, swimming).</li></ul>",
-lifestyle: "<p>Adequate sleep (7-9 hours), Stress management, Training monitoring and adjustment.</p>"
-    },
-    {
-        title: "Gait Speed",
-        definition: "<p>The time it takes to walk a set distance at a normal pace, measured in meters per second. It reflects a combination of balance, strength, and coordination. Gait speed is considered a vital sign in older adults, as it can predict functional decline, disability, and mortality risk.</p>",
-        relatedDisease: "<p>Mobility, risk of disability, neurological health, balance.</p>",
-        diet: "<ul><li>Protein: 20-40 g high-quality protein (e.g., whey) after resistance training session, daily; leucine-rich sources preferred.</li><li>Vitamin D: both of male and female<br>19-70 years: 15 µg/day<br>>70 years: 20 µg/day</li><li>Omega-3 fatty acid: 1-3 g/day EPA+DHA; upper safe limit is 3 g/day.</li></ul>",
-        exercise: "<ul><li>Resistance training for lower limbs: Walking</li><li>Gait and balance training</li><li>Progressive aerobic walking</li></ul>",
-        lifestyle: "<p>Daily movement, Avoid prolonged secentary behavior, Cognitive and social engagement.</p>"
-    },
-    {
-        title: "FEV1",
-        definition: "<p>Forced Expiratory Volume in 1 second, the maximum amount of air you can forcibly exhale in one second. It is a key measure of lung function and is often used to diagnose and monitor respiratory conditions. Lower FEV₁ values can indicate airway obstruction or reduced lung capacity.</p>",
-        relatedDisease: "<p>Asthma, COPD, lung health, respiratory aging, early mortality risk.</p>",
-        diet: "<ul><li>Omega-3: 1-3 g/day EPA+DHA; upper safe limit is 3 g/day.</li><li>Antioxidants: Vitamin C 500-1000 mg/day, Vitamin E 15 mg/day.</li><li>Adequate hydration: ~2-3 L water/day, adjust for climate and activity.</li></ul>",
-        exercise: "<ul><li>Respiratory muscle training: Breathing exercises</li><li>Moderate-intensity aerobic exercise</li><li>Yoga with pranayama.</li></ul>",
-        lifestyle: "<p>Smoking cessation, Avoid air pollution, Manage chronic respiratory diseases.</p>"
-    }
+  {
+    title: "Grip Strength",
+    definition: "<p>The highest reading from either hand, measured in kilograms. It indicates overall body strength and has been linked to a person’s biological age acceleration, risk of all-cause mortality, and future functional decline.</p>",
+    relatedDisease: "<ul><li>Frailty</li><li>Sarcopenia</li><li>Risk of falls</li><li>Overall mortality</li></ul>",
+    diet: "<p><strong>Protein Intake:</strong> ≥1.0-1.2 g/kg body weight/day, with an emphasis on leucine-rich sources such as whey, dairy, and legumes to stimulate muscle protein synthesis.</p><p><strong>Vitamin D:</strong> Essential for muscle function and strength; supplementation may be necessary if sunlight exposure is limited.</p>",
+    exercise: "<p><strong>Resistance Training:</strong> Progressive resistance exercises for the hand and forearm muscles, 2-3 times per week.</p><p><strong>Whole-Body Strength Training:</strong> Compound exercises like deadlifts and rows to improve overall strength.</p>",
+    lifestyle: "<p><strong>Ergonomics:</strong> Proper ergonomic setup at workstations to prevent strain.</p><p><strong>Manual Activities:</strong> Engaging in hobbies that require hand strength, such as gardening or playing a musical instrument.</p>"
+  },
+  {
+    title: "VO2MAX",
+    definition: "<p>The maximum rate at which your heart, lungs, and muscles can effectively use oxygen during exercise. Higher VO₂max levels indicate greater cardiorespiratory fitness and endurance. It is a key indicator of cardiovascular health and is strongly linked to a reduced risk of various chronic diseases.</p>",
+    relatedDisease: "<ul><li>Cardiovascular Disease</li><li>Hypertension</li><li>Type 2 Diabetes</li><li>Metabolic Syndrome</li></ul>",
+    diet: "<p><strong>Nitrate-Rich Foods:</strong> Beets, spinach, and arugula can improve oxygen efficiency.</p><p><strong>Iron-Rich Foods:</strong> Lean meats, lentils, and fortified cereals to support oxygen transport in the blood.</p>",
+    exercise: "<p><strong>High-Intensity Interval Training (HIIT):</strong> Alternating short bursts of intense exercise with recovery periods, proven to significantly increase VO₂ max.</p><p><strong>Endurance Training:</strong> Consistent aerobic activities like running, cycling, or swimming at a moderate intensity.</p>",
+    lifestyle: "<p><strong>Altitude Training:</strong> Controlled exposure to high altitudes can stimulate red blood cell production.</p><p><strong>Hydration:</strong> Maintaining optimal fluid balance is crucial for performance.</p>"
+  },
+  {
+      title: "Gait Speed",
+      definition: "<p>The time it takes to walk a set distance at a normal pace, measured in meters per second. It reflects a combination of balance, strength, and coordination. Gait speed is considered a vital sign in older adults, as it can predict functional decline, disability, and mortality risk.</p>",
+      relatedDisease: "<ul><li>Risk of Falls</li><li>Cognitive Decline</li><li>Frailty</li><li>Hospitalization Risk</li></ul>",
+      diet: "<p><strong>Protein Intake:</strong> Adequate protein to maintain lower limb muscle mass.</p><p><strong>Vitamin D & Calcium:</strong> For bone health, which is foundational for mobility.</p>",
+      exercise: "<p><strong>Strength Training:</strong> Focusing on leg muscles (quadriceps, hamstrings, calves).</p><p><strong>Balance and Coordination Exercises:</strong> Tai Chi, yoga, or specific balance drills.</p>",
+      lifestyle: "<p><strong>Proper Footwear:</strong> Wearing supportive and well-fitting shoes.</p><p><strong>Safe Environment:</strong> Ensuring the living space is free of hazards that could cause falls.</p>"
+  },
+  {
+      title: "FEV1",
+      definition: "<p>Forced Expiratory Volume in 1 second, the maximum amount of air you can forcibly exhale in one second. It is a key measure of lung function and is often used to diagnose and monitor respiratory conditions. Lower FEV₁ values can indicate airway obstruction or reduced lung capacity.</p>",
+      relatedDisease: "<ul><li>Chronic Obstructive Pulmonary Disease (COPD)</li><li>Asthma</li><li>Cardiovascular Mortality</li><li>Lung Cancer Risk</li></ul>",
+      diet: "<p><strong>Antioxidant-Rich Foods:</strong> Fruits and vegetables rich in vitamins C and E can protect lung tissue from oxidative damage.</p><p><strong>Omega-3 Fatty Acids:</strong> Found in fish oil, may reduce inflammation in the airways.</p>",
+      exercise: "<p><strong>Cardiovascular Exercise:</strong> Improves overall respiratory muscle endurance.</p><p><strong>Breathing Exercises:</strong> Techniques like diaphragmatic breathing and pursed-lip breathing can improve lung efficiency.</p>",
+      lifestyle: "<p><strong>Smoking Cessation:</strong> The single most important factor to prevent FEV₁ decline.</p><p><strong>Avoidance of Pollutants:</strong> Minimizing exposure to air pollution, dust, and occupational hazards.</p>"
+  }
 ];
 
 const MOCK_EBPS_DATA: Omit<EBPSInterventionItem, 'id' | 'category'>[] = [
@@ -53,7 +53,6 @@ const MOCK_SYMPHONY_DATA: Omit<SymphonyAgeItem, 'id' | 'category'>[] = [
     {
         title: 'Musculoskeletal',
         definition: '<p>The musculoskeletal system provides form, support, stability, and movement to the body. It is made up of the bones of the skeleton, muscles, cartilage, tendons, ligaments, joints, and other connective tissue that supports and binds tissues and organs together.</p>',
-        relatedDisease: '<p>Osteoporosis, Sarcopenia, Arthritis</p>',
         diet: '<ul><li>Vitamin D: Pan-sear salmon (15 mcg/100g) with soy-ginger glaze.</li><li>Collagen peptides: Simmer bone broth with ginger for soups.</li></ul>',
         exercise: '<ul><li>Resistance training.</li><li>General adults: Squats, lunges, and dumbbell rows 2-3 times/week.</li><li>Older adults: Chair squats and resistance band exercises to maintain strength safely.</li></ul>',
         lifestyle: '<p>Stress reduction: Chronic stress elevates inflammatory cytokines (IL-6), accelerating bone resorption (Rondanelli et al., 2021). Mindfulness or Tai Chi can help.</p>'

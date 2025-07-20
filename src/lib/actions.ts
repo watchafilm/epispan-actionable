@@ -52,7 +52,6 @@ const ebpsSchema = z.object({
 
 const symphonySchema = z.object({
   title: z.string().min(1, 'Title is required'),
-  definition: z.string().min(1, 'Definition is required'),
   diet: z.string().min(1, 'Diet is required'),
   exercise: z.string().min(1, 'Exercise is required'),
   lifestyle: z.string().min(1, 'Lifestyle is required'),

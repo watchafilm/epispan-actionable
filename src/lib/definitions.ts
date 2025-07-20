@@ -24,7 +24,6 @@ export type SymphonyAgeItem = {
   id: string;
   category: "Symphony";
   title: string;
-  definition: string;
   diet: string;
   exercise: string;
   lifestyle: string;

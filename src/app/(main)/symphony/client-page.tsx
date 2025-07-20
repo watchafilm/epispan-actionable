@@ -57,13 +57,6 @@ export function SymphonyClientPage({ data }: SymphonyClientPageProps) {
           </Select>
         </div>
         )}
-
-        <div className="flex-grow space-y-2">
-            <h3 className="font-semibold text-[#D95B5B]">{selectedData.title}</h3>
-            <div className="p-3 bg-red-100/60 rounded-lg h-full">
-                <div className="text-sm text-gray-700 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: selectedData.definition }} />
-            </div>
-        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">

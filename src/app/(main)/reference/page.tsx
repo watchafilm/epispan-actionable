@@ -1,3 +1,4 @@
+
 import { getItems } from '@/lib/data';
 import type { ReferenceItem } from '@/lib/definitions';
 import { ReferenceItemDisplay } from '@/components/ReferenceItem';
@@ -8,6 +9,11 @@ export default async function ReferencePage() {
   const allReferences = (await getItems('Reference')) as ReferenceItem[];
 
   const referencesByCategory = allReferences.reduce((acc, ref) => {
+    // Filter out items with no subCategory
+    if (!ref.subCategory) {
+      return acc;
+    }
+    
     const { subCategory } = ref;
     if (!acc[subCategory]) {
       acc[subCategory] = [];

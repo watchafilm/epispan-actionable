@@ -237,27 +237,18 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
       case 'Reference':
         return (
           <>
-            <FormField
-              control={form.control}
-              name="subCategory"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Sub-Category</FormLabel>
-                   <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a sub-category" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="Fitness Age">Fitness Age</SelectItem>
-                      <SelectItem value="OVERALL OmicAge">OVERALL OmicAge</SelectItem>
-                      <SelectItem value="SymphonyAge">SymphonyAge</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+             <FormField
+                control={form.control}
+                name="subCategory"
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Sub-Category</FormLabel>
+                        <FormControl>
+                            <Input {...field} placeholder="e.g., Fitness Age, OVERALL OmicAge" />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
             />
             <FormField control={form.control} name="text" render={({ field }) => (
                 <FormItem><FormLabel>Reference Text</FormLabel><FormControl><Textarea {...field} rows={5} /></FormControl><FormMessage /></FormItem>

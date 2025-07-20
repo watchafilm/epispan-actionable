@@ -7,15 +7,16 @@ export const dynamic = 'force-dynamic';
 export default async function ReferencePage() {
   const allReferences = (await getItems('Reference')) as ReferenceItem[];
 
-  const fitnessAgeReferences = allReferences.filter(
-    (ref) => ref.subCategory === 'Fitness Age'
-  );
-  const overallOmicAgeReferences = allReferences.filter(
-    (ref) => ref.subCategory === 'OVERALL OmicAge'
-  );
-  const symphonyAgeReferences = allReferences.filter(
-    (ref) => ref.subCategory === 'SymphonyAge'
-  );
+  const referencesByCategory = allReferences.reduce((acc, ref) => {
+    const { subCategory } = ref;
+    if (!acc[subCategory]) {
+      acc[subCategory] = [];
+    }
+    acc[subCategory].push(ref);
+    return acc;
+  }, {} as Record<string, ReferenceItem[]>);
+
+  const categories = Object.keys(referencesByCategory).sort();
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -24,38 +25,25 @@ export default async function ReferencePage() {
       </h1>
 
       <div className="space-y-12">
-        <section>
-          <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2 border-primary/30">
-            Fitness Age
-          </h2>
-          <div className="space-y-4">
-            {fitnessAgeReferences.map((ref) => (
-              <ReferenceItemDisplay key={ref.id} reference={ref} />
-            ))}
+        {categories.length > 0 ? (
+          categories.map((category) => (
+            <section key={category}>
+              <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2 border-primary/30">
+                {category}
+              </h2>
+              <div className="space-y-4">
+                {referencesByCategory[category].map((ref) => (
+                  <ReferenceItemDisplay key={ref.id} reference={ref} />
+                ))}
+              </div>
+            </section>
+          ))
+        ) : (
+          <div className="text-center py-16 text-muted-foreground bg-muted/50 rounded-lg">
+            <h2 className="text-2xl font-semibold">No References Found</h2>
+            <p>Add references in the editor to see them here.</p>
           </div>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2 border-primary/30">
-            OVERALL OmicAge
-          </h2>
-          <div className="space-y-4">
-            {overallOmicAgeReferences.map((ref) => (
-              <ReferenceItemDisplay key={ref.id} reference={ref} />
-            ))}
-          </div>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2 border-primary/30">
-            SymphonyAge
-          </h2>
-          <div className="space-y-4">
-            {symphonyAgeReferences.map((ref) => (
-              <ReferenceItemDisplay key={ref.id} reference={ref} />
-            ))}
-          </div>
-        </section>
+        )}
       </div>
     </div>
   );

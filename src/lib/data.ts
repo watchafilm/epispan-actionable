@@ -1,3 +1,4 @@
+
 'use server';
 
 import { db } from './firebase';
@@ -222,41 +223,42 @@ seedData().catch(console.error);
 
 
 export async function getItems(category: Item['category'] | null): Promise<Item[]> {
-    if (!category) {
-        const allSnapshot = await getDocs(query(itemsCollection, orderBy("category"), orderBy("order")));
-        const items = allSnapshot.docs.map(d => ({ id: d.id, ...d.data() } as Item));
-        return items;
+    let q;
+    if (category) {
+        q = query(itemsCollection, where("category", "==", category), orderBy("order"));
+    } else {
+        q = query(itemsCollection, orderBy("category"), orderBy("order"));
     }
-    
-    const q = query(itemsCollection, where("category", "==", category), orderBy("order"));
     
     try {
         const snapshot = await getDocs(q);
-        if (snapshot.empty && category !== 'Reference' && category !== 'EBPS Intervention' && category !== 'Symphony' && category !== 'FitnessAge') {
-            const allSnapshot = await getDocs(collection(itemsCollection, category));
-            const items = allSnapshot.docs.map(d => ({ id: d.id, ...d.data() } as Item));
-            items.sort((a,b) => (a.order ?? 0) - (b.order ?? 0));
-            return items;
-        }
-
-        const items = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Item));
-        return items;
-
+        return snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Item));
     } catch (error: any) {
         if (error.code === 'failed-precondition') {
-          console.warn("Firestore index not found. Falling back to client-side sorting for category:", category);
-          const allSnapshot = await getDocs(query(itemsCollection, where("category", "==", category)));
+          console.warn(`Firestore index not found for category: ${category || 'all'}. Falling back to client-side sorting.`);
           
-          const items = allSnapshot.docs.map(d => ({ id: d.id, ...d.data() } as Item));
+          let fallbackQuery;
+          if (category) {
+              fallbackQuery = query(itemsCollection, where("category", "==", category));
+          } else {
+              fallbackQuery = query(itemsCollection);
+          }
           
+          const snapshot = await getDocs(fallbackQuery);
+          const items = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Item));
+          
+          // Sort manually
           items.sort((a, b) => {
+            if (a.category !== b.category) {
+                return a.category.localeCompare(b.category);
+            }
             return (a.order ?? 0) - (b.order ?? 0);
           });
+          
           return items;
         }
-        // Re-throw other errors
         console.error("Error fetching items for category", category, error);
-        throw error;
+        throw error; // Re-throw other errors
     }
 }
 
@@ -312,3 +314,6 @@ export async function deleteItem(id: string) {
     await deleteDoc(docRef);
     return { success: true };
 }
+
+
+    

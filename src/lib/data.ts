@@ -66,74 +66,93 @@ const MOCK_SYMPHONY_DATA: Omit<SymphonyAgeItem, 'id' | 'category' | 'order'>[] =
 
 const itemsCollection = collection(db, 'items');
 
-// Helper to seed data if collection is empty
+// Helper to seed data if a specific category is empty
 async function seedData() {
+    console.log("Checking and seeding data if necessary...");
     const snapshot = await getDocs(itemsCollection);
-    if (snapshot.empty) {
-        console.log("Empty collection, seeding mock data...");
-        const batch = writeBatch(db);
-        
-        MOCK_FITNESS_AGE_DATA.forEach((item, index) => {
-            const docRef = doc(itemsCollection);
-            batch.set(docRef, { ...item, category: 'FitnessAge', order: index });
-        });
-        
-        MOCK_EBPS_DATA.forEach((item, index) => {
-            const docRef = doc(itemsCollection);
-            batch.set(docRef, { ...item, category: 'EBPS Intervention', order: index });
-        });
+    const allItems = snapshot.docs.map(doc => doc.data() as Item);
 
-        MOCK_SYMPHONY_DATA.forEach((item, index) => {
-             const docRef = doc(itemsCollection);
-            batch.set(docRef, { ...item, category: 'Symphony', order: index });
-        });
+    const dataToSeed = [
+        { category: 'FitnessAge', data: MOCK_FITNESS_AGE_DATA, type: 'FitnessAge' },
+        { category: 'EBPS Intervention', data: MOCK_EBPS_DATA, type: 'EBPS Intervention' },
+        { category: 'Symphony', data: MOCK_SYMPHONY_DATA, type: 'Symphony' },
+        { 
+            category: 'Reference', 
+            data: [...fitnessAgeReferences, ...overallOmicAgeReferences, ...symphonyAgeReferences],
+            type: 'Reference'
+        }
+    ];
 
-        [...fitnessAgeReferences, ...overallOmicAgeReferences, ...symphonyAgeReferences].forEach((item, index) => {
-            const docRef = doc(itemsCollection);
-            batch.set(docRef, { 
-                text: item.text,
-                subCategory: item.subCategory,
-                category: 'Reference', 
-                order: index,
-                title: item.text.substring(0, 50) + '...'
-            });
-        });
-        
+    const batch = writeBatch(db);
+    let batchHasWrites = false;
+
+    for (const { category, data, type } of dataToSeed) {
+        const existingItems = allItems.filter(item => item.category === category);
+        if (existingItems.length === 0) {
+            console.log(`Seeding data for category: ${category}`);
+            batchHasWrites = true;
+            if (type === 'Reference') {
+                 data.forEach((item, index) => {
+                    const docRef = doc(collection(db, 'items'));
+                    const refItem = item as typeof fitnessAgeReferences[0];
+                    batch.set(docRef, { 
+                        text: refItem.text,
+                        subCategory: refItem.subCategory,
+                        category: 'Reference', 
+                        order: index,
+                        title: refItem.text.substring(0, 50) + '...'
+                    });
+                });
+            } else {
+                data.forEach((item, index) => {
+                    const docRef = doc(collection(db, 'items'));
+                    batch.set(docRef, { ...item, category: type, order: index });
+                });
+            }
+        }
+    }
+
+    if (batchHasWrites) {
         await batch.commit();
         console.log("Seeding complete.");
     } else {
-        // Migration: Check if existing documents have the 'order' field
-        let needsMigration = false;
-        for (const doc of snapshot.docs) {
-            if (doc.data().order === undefined) {
-                needsMigration = true;
-                break;
-            }
-        }
+        console.log("All categories have data, no seeding required.");
+    }
 
-        if (needsMigration) {
-            console.log("Documents are missing 'order' field. Starting migration...");
-            const allItems = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-            
-            const categories = [...new Set(allItems.map(item => item.category))];
-            
-            const batch = writeBatch(db);
-            for (const category of categories) {
-                const categoryItems = allItems.filter(item => item.category === category);
-                // Simple ordering by title for migration
-                categoryItems.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
-                categoryItems.forEach((item, index) => {
-                    const docRef = doc(db, 'items', item.id);
-                    batch.update(docRef, { order: index });
-                });
+    // Migration for missing 'order' field
+    const batchUpdateOrder = writeBatch(db);
+    let orderUpdateNeeded = false;
+    const itemsWithoutOrder = snapshot.docs.filter(doc => doc.data().order === undefined);
+    
+    if (itemsWithoutOrder.length > 0) {
+        console.log("Some documents are missing 'order' field. Starting migration...");
+        const itemsByCategory: Record<string, Item[]> = {};
+        allItems.forEach(item => {
+            if (!itemsByCategory[item.category]) {
+                itemsByCategory[item.category] = [];
             }
-            await batch.commit();
-            console.log("Order field migration complete.");
-        } else {
-            console.log("Collection is not empty and seems up to date, skipping seed.");
+            itemsByCategory[item.category].push(item);
+        });
+
+        for (const category in itemsByCategory) {
+            itemsByCategory[category].sort((a,b) => (a.title || '').localeCompare(b.title || ''));
+            itemsByCategory[category].forEach((item, index) => {
+                 // Only update if order is actually missing to avoid unnecessary writes
+                 if(item.order === undefined) {
+                    const docRef = doc(db, 'items', item.id);
+                    batchUpdateOrder.update(docRef, { order: index });
+                    orderUpdateNeeded = true;
+                 }
+            });
         }
     }
+    
+    if (orderUpdateNeeded) {
+        await batchUpdateOrder.commit();
+        console.log("Order field migration complete.");
+    }
 }
+
 
 // Call seedData on startup. In a real app, you might run this as a separate script.
 seedData().catch(console.error);
@@ -150,13 +169,12 @@ export async function getItems(category: Item['category']): Promise<Item[]> {
     if (error.code === 'failed-precondition') {
       // This error means the composite index is missing.
       // We'll fall back to client-side sorting as a workaround.
-      console.warn("Firestore index not found. Falling back to client-side sorting. For production, create the required index in Firebase.");
-      const snapshot = await getDocs(collection(db, 'items'));
-      const allItems = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Item));
+      console.warn("Firestore index not found. Falling back to client-side sorting for category:", category);
+      const allSnapshot = await getDocs(query(itemsCollection, where("category", "==", category)));
+      const items = allSnapshot.docs.map(d => ({ id: d.id, ...d.data() } as Item));
       
-      const filteredItems = allItems.filter(item => item.category === category);
-      filteredItems.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-      return filteredItems;
+      items.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+      return items;
     }
     // Re-throw other errors
     throw error;
@@ -164,7 +182,6 @@ export async function getItems(category: Item['category']): Promise<Item[]> {
 }
 
 export async function getAllItems(): Promise<Item[]> {
-  // Fetch all items and sort in code to handle potential missing indexes gracefully
   const snapshot = await getDocs(itemsCollection);
   const allItems = snapshot.docs.map(doc => ({
     id: doc.id,

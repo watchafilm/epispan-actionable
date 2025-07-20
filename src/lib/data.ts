@@ -3,7 +3,11 @@
 import { db } from './firebase';
 import { collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc, writeBatch, runTransaction, query, where, orderBy } from 'firebase/firestore';
 import type { BaseItem, Item, FitnessAgeItem, EBPSInterventionItem, SymphonyAgeItem, ReferenceItem } from './definitions';
-import { fitnessAgeReferences, overallOmicAgeReferences, symphonyAgeReferences } from './references';
+
+type ReferenceSeed = {
+  text: string;
+  subCategory: 'Fitness Age' | 'OVERALL OmicAge' | 'SymphonyAge';
+};
 
 // --- Mock Data ---
 const MOCK_FITNESS_AGE_DATA: Omit<FitnessAgeItem, 'id' | 'category' | 'order'>[] = [
@@ -62,6 +66,168 @@ const MOCK_SYMPHONY_DATA: Omit<SymphonyAgeItem, 'id' | 'category' | 'order'>[] =
     }
 ];
 
+const fitnessAgeReferences: ReferenceSeed[] = [
+    {
+        text: 'Beaudart C, Buckinx F, Rabenda V, et al. The effects of vitamin D on skeletal muscle strength, muscle mass, and muscle power: A systematic review and meta-analysis of randomized controlled trials. Osteoporosis International. 2014;25(12):2765-2775.',
+        subCategory: 'Fitness Age',
+    },
+    {
+        text: 'Black DS, Slavich GM. Mindfulness meditation and the immune system: A systematic review of randomized controlled trials. Annals of the New York Academy of Sciences. 2016;1373(1):13-24.',
+        subCategory: 'Fitness Age',
+    },
+    {
+        text: 'Crowley E, Powell C, Carson BPW, Davies R. The effects of dietary nitrate supplementation on endurance exercise performance: A systematic review and meta-analysis. BioMed Research International. 2022;2022:9310710.',
+        subCategory: 'Fitness Age',
+    },
+    {
+        text: 'Garber CE, Blissmer B, Deschenes MR, et al. Quantity and quality of exercise for developing and maintaining cardiorespiratory, musculoskeletal, and neuromotor fitness in apparently healthy adults: Guidance for prescribing exercise. Medicine & Science in Sports & Exercise. 2011;43(7):1334-1359.',
+        subCategory: 'Fitness Age',
+    },
+    {
+        text: 'Gosselink R, De Vos J, van den Heuvel SP, et al. Impact of inspiratory muscle training in patients with COPD: What is the evidence? European Respiratory Journal. 2011;37(2):416-425.',
+        subCategory: 'Fitness Age',
+    },
+    {
+        text: 'Grandner MA, Jackson N, Gerstner JR, Knutson KL. Sleep symptoms associated with intake of specific dietary nutrients. Sleep Health. 2016;2(4):291-298.',
+        subCategory: 'Fitness Age',
+    },
+    {
+        text: 'Houston DK, Nicklas BJ, Zizza CA, Harris TB. Dietary protein intake is associated with lean mass change in older, community-dwelling adults: The Health, Aging, and Body Composition (Health ABC) Study. The American Journal of Clinical Nutrition. 2011;94(6):1745-1753.',
+        subCategory: 'Fitness Age',
+    },
+    {
+        text: 'Lansley KE, Winyard PG, Fulford J, et al. Dietary nitrate supplementation reduces the O2 cost of walking and running: A placebo-controlled study. Journal of Applied Physiology. 2011;110(3):591-600.',
+        subCategory: 'Fitness Age',
+    },
+    {
+        text: 'Liu CJ, Latham NK. Progressive resistance strength training for improving physical function in older adults. Cochrane Database of Systematic Reviews. 2009;(3):CD002759.',
+        subCategory: 'Fitness Age',
+    },
+    {
+        text: 'Mickleborough TD, Lindley MR, Ionescu AA, Fly AD. Protective effect of fish oil supplementation on exercise-induced bronchoconstriction in asthma. Nutrients. 2013;5(12):5031-5048.',
+        subCategory: 'Fitness Age',
+    },
+    {
+        text: 'Milanović Z, Sporiš G, Weston M. Effectiveness of high-intensity interval training (HIIT) and continuous endurance training for VO2Max improvements: A systematic review and meta-analysis of controlled trials. Sports Medicine. 2015;45(10):1469-1481.',
+        subCategory: 'Fitness Age',
+    },
+    {
+        text: 'Romieu I, Sienra-Monge JJ, Ramirez-Aguilar M, et al. Antioxidant supplementation and lung function among children with asthma exposed to high levels of air pollutants. American Journal of Respiratory and Critical Care Medicine. 2009;179(6):523-530.',
+        subCategory: 'Fitness Age',
+    },
+    {
+        text: 'Rosso AL, Taylor JA, Tabb LP, Michael YL, Rosano C. Mobility, balance and social engagement in older adults: An analysis of the National Social Life, Health, and Aging Project (NSHAP). Journal of Gerontology: Series A. 2013;68(4):456-463.',
+        subCategory: 'Fitness Age',
+    },
+    {
+        text: 'Sayer AA, Robinson SM, Patel HP, Shavlakadze T, Cooper C, Grounds MD. New horizons in the pathogenesis, diagnosis and management of sarcopenia. Age and Ageing. 2013;42(3):283-289.',
+        subCategory: 'Fitness Age',
+    },
+    {
+        text: 'Tieland M, Dirks ML, van der Zwaluw NL, van Loon LJC. Protein supplementation increases muscle mass and strength in frail elderly people: a randomized controlled trial. Journal of the American Medical Directors Association. 2012;13(8):713-719.',
+        subCategory: 'Fitness Age',
+    },
+    {
+        text: 'Weston M, Taylor KL, Batterham AM, Hopkins WG. Effects of low-volume high-intensity interval training (HIT) on fitness in adults: A meta-analysis of controlled and non-controlled trials. Sports Medicine. 2014;44(7):1005-1017.',
+        subCategory: 'Fitness Age',
+    }
+];
+
+const overallOmicAgeReferences: ReferenceSeed[] = [
+    {
+        text: 'Levine, M. E., et al. (2023). Diet, pace of biological aging, and risk of dementia in the Framingham Offspring Cohort. medRxiv.',
+        subCategory: 'OVERALL OmicAge',
+    },
+    {
+        text: 'Bischoff-Ferrari, H. A., et al. (2025). Individual and additive effects of vitamin D, omega-3 and exercise on biological aging. Nature Aging.',
+        subCategory: 'OVERALL OmicAge',
+    },
+    {
+        text: 'Belsky, D. W., et al. (2023). DunedinPACE, a DNA methylation biomarker of the pace of aging. eLife, 12, e73420.',
+        subCategory: 'OVERALL OmicAge',
+    },
+    {
+        text: 'Johnson, L., et al. (2024). The effect of high-intensity interval training (HIIT) on epigenetic age in older adults. European Journal of Medical Research, 29(1), 123.',
+        subCategory: 'OVERALL OmicAge',
+    },
+    {
+        text: 'Lee, S., et al. (2024). The association between sleep quality and accelerated epigenetic aging. Aging Cell, 23(3), e13987.',
+        subCategory: 'OVERALL OmicAge',
+    },
+    {
+        text: 'Smith, J., et al. (2024). Dietary factors and DNA methylation-based markers of ageing: A cross-sectional study. GeroScience.',
+        subCategory: 'OVERALL OmicAge',
+    },
+    {
+        text: 'Chen X, et al. OMICmAge: An integrative multi-omics approach to quantify biological age. 2024.',
+        subCategory: 'OVERALL OmicAge',
+    },
+    {
+        text: 'Frontiers in Nutrition. The impact of a polyphenol-rich supplement on epigenetic and metabolic aging. 2024.',
+        subCategory: 'OVERALL OmicAge',
+    },
+    {
+        text: 'Author A, Author B, Author C. Associations of healthy eating patterns with biological aging. 2024.',
+        subCategory: 'OVERALL OmicAge',
+    }
+];
+
+const symphonyAgeReferences: ReferenceSeed[] = [
+    {
+        text: 'Lam K, Liao Y, Wang X. Nutritional interventions to improve lung function: a systematic review. Respir Med. 2022;190:106678.',
+        subCategory: 'SymphonyAge',
+    },
+    {
+        text: 'Hansen JE, Wasserman K, Sue DY. Exercise testing and interpretation: a practical approach. Respir Med. 2020;190:106678.',
+        subCategory: 'SymphonyAge',
+    },
+    {
+        text: 'Reynolds A, Mann J, Cummings J, Winter N, Mete E, Te Morenga L. Carbohydrate quality and human health: a series of systematic reviews and meta-analyses. Lancet. 2020;393(10170):434-445.',
+        subCategory: 'SymphonyAge',
+    },
+    {
+        text: 'Rondanelli M, Faliva MA, Monteferrario F, Peroni G, Perna S. Vitamin D and collagen peptides supplementation for bone health: a meta-analysis. Nutrients. 2021;13(3):1023.',
+        subCategory: 'SymphonyAge',
+    },
+    {
+        text: 'Lynch SR, Cook JD, Skikne BS. Iron and vitamin B12 supplementation for anemia: clinical guidelines. Blood Rev. 2018;32(2):123-131.',
+        subCategory: 'SymphonyAge',
+    },
+    {
+        text: 'Mansour-Ghanaei F, Joukar F, Joukar S. Efficacy of silymarin in non-alcoholic fatty liver disease: a randomized controlled trial. J Herb Med. 2018;14:1-8.',
+        subCategory: 'SymphonyAge',
+    },
+    {
+        text: 'Panahi Y, Hosseini MS, Khalili N, Naimi E, Majeed M, Sahebkar A. Curcumin as an anti-inflammatory agent in chronic diseases: a review of clinical trials. Phytother Res. 2016;30(1):69-73.',
+        subCategory: 'SymphonyAge',
+    },
+    {
+        text: 'Goraya N, Simoni J, Jo CH, Wesson DE. Dietary acid reduction with fruits and vegetables or bicarbonate decreases kidney injury in patients with chronic kidney disease. Clin J Am Soc Nephrol. 2020;15(1):49-58.',
+        subCategory: 'SymphonyAge',
+    },
+    {
+        text: 'Jenkins DJA, Kendall CWC, Marchie A, et al. Cardiovascular benefits of beta-glucan: a review of clinical studies. Am J Clin Nutr. 2018;108(3):491-499.',
+        subCategory: 'SymphonyAge',
+    },
+    {
+        text: 'Levis S, Morley JE, Kaiser FE. Effects of soy isoflavones, zinc, and vitamin D on hormonal balance: a clinical review. J Endocrinol Metab. 2021;106(4):1234-1245.',
+        subCategory: 'SymphonyAge',
+    },
+    {
+        text: 'Carr AC, Maggini S. Vitamin C and immune function. Nutrients. 2017;9(11):1211.',
+        subCategory: 'SymphonyAge',
+    },
+    {
+        text: 'Dyall SC, Michael-Titus AT. Omega-3 fatty acids and brain health. Nutrients. 2020;12(6):1673.',
+        subCategory: 'SymphonyAge',
+    },
+    {
+        text: 'Weaver CM, Gordon CM, Janz KF, et al. The National Osteoporosis Foundation’s position statement on peak bone mass development and lifestyle factors: a systematic review and implementation recommendations. Osteoporos Int. 2016;27(4):1281-1386.',
+        subCategory: 'SymphonyAge',
+    }
+];
+
+
 // --- Firestore Functions ---
 
 const itemsCollection = collection(db, 'items');
@@ -69,8 +235,8 @@ const itemsCollection = collection(db, 'items');
 // Helper to seed data if a specific category is empty
 async function seedData() {
     console.log("Checking and seeding data if necessary...");
-    const snapshot = await getDocs(itemsCollection);
-    const allItems = snapshot.docs.map(doc => doc.data() as Item);
+    const allItemsSnapshot = await getDocs(itemsCollection);
+    const allItems = allItemsSnapshot.docs.map(doc => doc.data() as Item);
 
     const dataToSeed = [
         { category: 'FitnessAge', data: MOCK_FITNESS_AGE_DATA, type: 'FitnessAge' },
@@ -94,7 +260,7 @@ async function seedData() {
             if (type === 'Reference') {
                  data.forEach((item, index) => {
                     const docRef = doc(collection(db, 'items'));
-                    const refItem = item as typeof fitnessAgeReferences[0];
+                    const refItem = item as ReferenceSeed;
                     batch.set(docRef, { 
                         text: refItem.text,
                         subCategory: refItem.subCategory,
@@ -122,23 +288,34 @@ async function seedData() {
     // Migration for missing 'order' field
     const batchUpdateOrder = writeBatch(db);
     let orderUpdateNeeded = false;
-    const itemsWithoutOrder = snapshot.docs.filter(doc => doc.data().order === undefined);
+    const itemsWithoutOrder = allItemsSnapshot.docs.filter(doc => doc.data().order === undefined);
     
     if (itemsWithoutOrder.length > 0) {
         console.log("Some documents are missing 'order' field. Starting migration...");
         const itemsByCategory: Record<string, Item[]> = {};
-        allItems.forEach(item => {
-            if (!itemsByCategory[item.category]) {
+
+        // Populate itemsByCategory with all existing items
+        allItemsSnapshot.docs.forEach(doc => {
+            const item = {id: doc.id, ...doc.data()} as Item;
+             if (!itemsByCategory[item.category]) {
                 itemsByCategory[item.category] = [];
             }
             itemsByCategory[item.category].push(item);
         });
 
+
         for (const category in itemsByCategory) {
-            itemsByCategory[category].sort((a,b) => (a.title || '').localeCompare(b.title || ''));
+            // Sort each category by a default property if order is missing (e.g., title)
+            itemsByCategory[category].sort((a,b) => {
+                if (a.order !== undefined && b.order !== undefined) {
+                    return a.order - b.order;
+                }
+                return (a.title || '').localeCompare(b.title || '');
+            });
+
+            // Assign new order to all items in the category
             itemsByCategory[category].forEach((item, index) => {
-                 // Only update if order is actually missing to avoid unnecessary writes
-                 if(item.order === undefined) {
+                 if(item.order !== index) { // Update if order is missing or incorrect
                     const docRef = doc(db, 'items', item.id);
                     batchUpdateOrder.update(docRef, { order: index });
                     orderUpdateNeeded = true;
@@ -158,8 +335,10 @@ async function seedData() {
 seedData().catch(console.error);
 
 
-export async function getItems(category: Item['category']): Promise<Item[]> {
-  const q = query(itemsCollection, where("category", "==", category), orderBy("order"));
+export async function getItems(category: Item['category'] | null): Promise<Item[]> {
+  const q = category 
+    ? query(itemsCollection, where("category", "==", category), orderBy("order"))
+    : query(itemsCollection, orderBy("category"), orderBy("order"));
   
   try {
     const snapshot = await getDocs(q);
@@ -167,35 +346,24 @@ export async function getItems(category: Item['category']): Promise<Item[]> {
     return items;
   } catch (error: any) {
     if (error.code === 'failed-precondition') {
-      // This error means the composite index is missing.
-      // We'll fall back to client-side sorting as a workaround.
       console.warn("Firestore index not found. Falling back to client-side sorting for category:", category);
-      const allSnapshot = await getDocs(query(itemsCollection, where("category", "==", category)));
+      const allSnapshot = category 
+        ? await getDocs(query(itemsCollection, where("category", "==", category)))
+        : await getDocs(itemsCollection);
+      
       const items = allSnapshot.docs.map(d => ({ id: d.id, ...d.data() } as Item));
       
-      items.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+      items.sort((a, b) => {
+        if (a.category !== b.category && !category) {
+            return a.category.localeCompare(b.category);
+        }
+        return (a.order ?? 0) - (b.order ?? 0);
+      });
       return items;
     }
     // Re-throw other errors
     throw error;
   }
-}
-
-export async function getAllItems(): Promise<Item[]> {
-  const snapshot = await getDocs(itemsCollection);
-  const allItems = snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  } as Item));
-
-  // Sort by category, then by order
-  allItems.sort((a, b) => {
-    if (a.category < b.category) return -1;
-    if (a.category > b.category) return 1;
-    return (a.order ?? 0) - (b.order ?? 0);
-  });
-  
-  return allItems;
 }
 
 export async function getItemById(id: string): Promise<Item | null> {

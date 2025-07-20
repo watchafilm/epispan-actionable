@@ -118,8 +118,10 @@ export async function saveItemAction(id: string | null, category: Item['category
 
 export async function deleteItemAction(id: string) {
   try {
-    const items = await getAllItems();
-    const itemToDelete = items.find(i => i.id === id);
+    // To find the category, we need to fetch the item first.
+    // We cannot trust the category passed from the client for security.
+    const allItems = await getItems(null); // Fetch all items
+    const itemToDelete = allItems.find(i => i.id === id);
     
     if (!itemToDelete) {
       throw new Error('Item not found');

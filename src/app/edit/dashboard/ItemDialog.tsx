@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import type { Item, FitnessAgeItem, EBPSInterventionItem } from '@/lib/definitions';
+import type { Item, FitnessAgeItem, EBPSInterventionItem, ReferenceItem } from '@/lib/definitions';
 import { saveItemAction } from '@/lib/actions';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
@@ -70,11 +70,9 @@ const symphonySchema = z.object({
 });
 
 const referenceSchema = z.object({
-    title: z.string().min(1, 'Title is required'),
-    value: z.string().min(1, 'Value is required'),
-    description: z.string().min(1, 'Description is required'),
-    buttonText: z.string().optional(),
-    buttonLink: z.string().url('Must be a valid URL').or(z.literal('#')).optional(),
+    title: z.string().optional(), // Title is not used for display but good to have
+    text: z.string().min(1, 'Reference text is required'),
+    subCategory: z.string().min(1, 'Sub-category is required'),
 });
 
 
@@ -99,6 +97,8 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
       howShouldWeDo: '',
       biomarkersCategory: '',
       recommendations: '',
+      text: '',
+      subCategory: '',
       order: 0,
     },
   });
@@ -138,6 +138,8 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
         howShouldWeDo: '',
         biomarkersCategory: '',
         recommendations: '',
+        text: '',
+        subCategory: '',
         order: 0,
       });
     }
@@ -145,6 +147,11 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
 
 
   const onSubmit = async (values: any) => {
+    // For 'Reference', set title to be the first 50 chars of text
+    if (category === 'Reference' && values.text) {
+        values.title = values.text.substring(0, 50) + '...';
+    }
+
     const formData = new FormData();
     Object.keys(values).forEach(key => {
         if(values[key] !== undefined && values[key] !== null) {
@@ -168,6 +175,8 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
       });
     }
   };
+  
+  const showTitleField = category !== 'Reference';
 
   const renderFormFields = () => {
     switch (category) {
@@ -228,17 +237,30 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
       case 'Reference':
         return (
           <>
-            <FormField control={form.control} name="value" render={({ field }) => (
-                <FormItem><FormLabel>Value</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )}/>
-            <FormField control={form.control} name="description" render={({ field }) => (
-                <FormItem><FormLabel>Description</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
-            )}/>
-            <FormField control={form.control} name="buttonText" render={({ field }) => (
-                <FormItem><FormLabel>Button Text</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )}/>
-            <FormField control={form.control} name="buttonLink" render={({ field }) => (
-                <FormItem><FormLabel>Button Link</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+            <FormField
+              control={form.control}
+              name="subCategory"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sub-Category</FormLabel>
+                   <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a sub-category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Fitness Age">Fitness Age</SelectItem>
+                      <SelectItem value="OVERALL OmicAge">OVERALL OmicAge</SelectItem>
+                      <SelectItem value="SymphonyAge">SymphonyAge</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField control={form.control} name="text" render={({ field }) => (
+                <FormItem><FormLabel>Reference Text</FormLabel><FormControl><Textarea {...field} rows={5} /></FormControl><FormMessage /></FormItem>
             )}/>
           </>
         );
@@ -283,9 +305,11 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
                 </FormItem>
               )}
             />
-             <FormField control={form.control} name="title" render={({ field }) => (
-                <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )}/>
+            {showTitleField && (
+                <FormField control={form.control} name="title" render={({ field }) => (
+                    <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                )}/>
+            )}
 
             {renderFormFields()}
 

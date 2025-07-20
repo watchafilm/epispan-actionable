@@ -2,7 +2,7 @@ import { getAllItems, getItems } from '@/lib/data';
 import { logout, updateItemOrderAction } from '@/lib/actions';
 import { Button } from '@/components/ui/button';
 import { LogOut, PlusCircle } from 'lucide-react';
-import type { Item, FitnessAgeItem, EBPSInterventionItem, SymphonyAgeItem } from '@/lib/definitions';
+import type { Item, FitnessAgeItem, EBPSInterventionItem, SymphonyAgeItem, ReferenceItem } from '@/lib/definitions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Image from 'next/image';
 
@@ -11,6 +11,7 @@ import { EBPSInterventionClientPage } from '@/app/(main)/ebps-intervention/clien
 import { SymphonyClientPage } from '@/app/(main)/symphony/client-page';
 import { EditableWrapper } from './EditableWrapper';
 import { ItemDialog } from './ItemDialog';
+import { ReferenceItemDisplay } from '@/components/ReferenceItem';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,6 +20,7 @@ export default async function EditorDashboardPage() {
   const fitnessItems = allItems.filter(item => item.category === 'FitnessAge') as FitnessAgeItem[];
   const ebpsItems = allItems.filter(item => item.category === 'EBPS Intervention') as EBPSInterventionItem[];
   const symphonyItems = allItems.filter(item => item.category === 'Symphony') as SymphonyAgeItem[];
+  const referenceItems = allItems.filter(item => item.category === 'Reference') as ReferenceItem[];
   
   const fitnessData = fitnessItems.reduce((acc, item) => {
     acc[item.title] = item;
@@ -53,10 +55,11 @@ export default async function EditorDashboardPage() {
       </header>
       <main className="container mx-auto p-4 sm:p-6 lg:p-8">
         <Tabs defaultValue="fitness-age" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-4">
+          <TabsList className="grid w-full grid-cols-4 mb-4">
             <TabsTrigger value="fitness-age">FitnessAge</TabsTrigger>
             <TabsTrigger value="ebps-intervention">EBPS Intervention</TabsTrigger>
             <TabsTrigger value="symphony">SymphonyAge</TabsTrigger>
+            <TabsTrigger value="reference">Reference</TabsTrigger>
           </TabsList>
           
           <TabsContent value="fitness-age">
@@ -228,6 +231,41 @@ export default async function EditorDashboardPage() {
                   ) : (
                     <div className="text-center py-16 text-muted-foreground bg-muted/50 rounded-lg">
                       <p>No Symphony items yet. Click "Add New" to create one.</p>
+                    </div>
+                  )}
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="reference">
+            <div className="border rounded-lg p-4 space-y-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold">Reference Page</h2>
+                 <EditableWrapper item={null} category="Reference">
+                    <Button>
+                      <PlusCircle className="mr-2 h-4 w-4" />
+                      Add New Reference
+                    </Button>
+                 </EditableWrapper>
+              </div>
+              <div className="space-y-4">
+                {referenceItems.length > 0 ? (
+                    referenceItems.map((item, index) => (
+                       <EditableWrapper 
+                          key={item.id} 
+                          item={item} 
+                          category="Reference"
+                          isFirst={index === 0}
+                          isLast={index === referenceItems.length - 1}
+                        >
+                            <div className="border-2 border-dashed border-gray-300 p-4 rounded-lg my-4 relative hover:border-green-500 transition-all">
+                                <ReferenceItemDisplay reference={item} />
+                            </div>
+                       </EditableWrapper>
+                    ))
+                  ) : (
+                    <div className="text-center py-16 text-muted-foreground bg-muted/50 rounded-lg">
+                      <p>No Reference items yet. Click "Add New" to create one.</p>
                     </div>
                   )}
               </div>

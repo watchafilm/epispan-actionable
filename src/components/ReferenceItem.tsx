@@ -1,7 +1,7 @@
-import type { Reference } from '@/lib/references';
+import type { ReferenceItem } from '@/lib/definitions';
 import { Card, CardContent } from '@/components/ui/card';
 
-export function ReferenceItemDisplay({ reference }: { reference: Reference }) {
+export function ReferenceItemDisplay({ reference }: { reference: ReferenceItem }) {
   const { text } = reference;
 
   return (

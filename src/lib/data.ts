@@ -1,6 +1,7 @@
 import { db } from './firebase';
-import { collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc, query, where, writeBatch, orderBy, collectionGroup, runTransaction } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc, writeBatch, runTransaction } from 'firebase/firestore';
 import type { BaseItem, Item, FitnessAgeItem, EBPSInterventionItem, SymphonyAgeItem, ReferenceItem } from './definitions';
+import { fitnessAgeReferences, overallOmicAgeReferences, symphonyAgeReferences } from './references';
 
 // --- Mock Data ---
 const MOCK_FITNESS_AGE_DATA: Omit<FitnessAgeItem, 'id' | 'category' | 'order'>[] = [
@@ -58,17 +59,6 @@ const MOCK_SYMPHONY_DATA: Omit<SymphonyAgeItem, 'id' | 'category' | 'order'>[] =
     }
 ];
 
-const MOCK_REFERENCE_DATA: Omit<ReferenceItem, 'id' | 'category'|'order'>[] = [
-    {
-        title: 'Optimal Range',
-        value: '45-50 years',
-        description: 'The optimal FitnessAge range for your demographic group for longevity and healthspan.',
-        buttonText: 'See References',
-        buttonLink: '#',
-    }
-];
-
-
 // --- Firestore Functions ---
 
 const itemsCollection = collection(db, 'items');
@@ -95,9 +85,14 @@ async function seedData() {
             batch.set(docRef, { ...item, category: 'Symphony', order: index });
         });
 
-        MOCK_REFERENCE_DATA.forEach((item, index) => {
+        [...fitnessAgeReferences, ...overallOmicAgeReferences, ...symphonyAgeReferences].forEach((item, index) => {
             const docRef = doc(itemsCollection);
-            batch.set(docRef, { ...item, category: 'Reference', order: index });
+            batch.set(docRef, { 
+                ...item, 
+                category: 'Reference', 
+                order: index, 
+                title: item.text.substring(0, 50) + '...'
+            });
         });
         
         await batch.commit();
@@ -159,7 +154,6 @@ export async function getAllItems(): Promise<BaseItem[]> {
     title: doc.data().title,
     category: doc.data().category,
     order: doc.data().order,
-    value: doc.data().value || '',
   }));
 
   allItems.sort((a, b) => {

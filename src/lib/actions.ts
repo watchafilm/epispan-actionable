@@ -63,11 +63,9 @@ const symphonySchema = baseSchema.extend({
 });
 
 const referenceSchema = baseSchema.extend({
-    title: z.string().min(1, 'Title is required'),
-    value: z.string().min(1, 'Value is required'),
-    description: z.string().min(1, 'Description is required'),
-    buttonText: z.string().optional(),
-    buttonLink: z.string().url('Must be a valid URL').or(z.literal('#')).optional(),
+  title: z.string().optional(),
+  text: z.string().min(1, 'Reference text is required'),
+  subCategory: z.string().min(1, 'Sub-category is required'),
 });
 
 
@@ -120,8 +118,7 @@ export async function saveItemAction(id: string | null, category: Item['category
 
 export async function deleteItemAction(id: string) {
   try {
-    // Before deleting, get the category to reorder remaining items
-    const items = await getItems('FitnessAge').then(fa => getItems('EBPS Intervention').then(ebps => getItems('Symphony').then(s => getItems('Reference').then(r => [...fa, ...ebps, ...s, ...r]))));
+    const items = await getAllItems();
     const itemToDelete = items.find(i => i.id === id);
     
     if (!itemToDelete) {
@@ -130,7 +127,7 @@ export async function deleteItemAction(id: string) {
     
     await deleteItem(id);
 
-    // Reorder remaining items
+    // Reorder remaining items in the same category
     const remainingItems = await getItems(itemToDelete.category);
     const orderedItems = remainingItems.map((item, index) => ({ id: item.id, order: index }));
     await updateItemsOrder(orderedItems);

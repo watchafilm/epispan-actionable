@@ -34,12 +34,10 @@ export type SymphonyAgeItem = {
 
 export type ReferenceItem = {
   id: string;
-  category: "Reference";
-  title: string;
-  value: string;
-  description: string;
-  buttonText: string;
-  buttonLink: string;
+  category: 'Reference';
+  title: string; // Will be auto-generated from text
+  text: string;
+  subCategory: 'Fitness Age' | 'OVERALL OmicAge' | 'SymphonyAge';
   order: number;
 };
 

@@ -58,18 +58,8 @@ const ebpsSchema = z.object({
     description: z.string().min(1, "Description is required"),
     howShouldWeDo: z.string().min(1, "How should we do is required"),
     biomarkersCategory: z.string().min(1, "Biomarkers category is required"),
-    diet: z.string().min(1, "Diet JSON is required").transform((val, ctx) => {
-        try { return JSON.parse(val) } catch (e) { 
-            ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Diet must be a valid JSON object."});
-            return z.NEVER;
-        }
-    }),
-    recommendations: z.string().min(1, "Recommendations JSON is required").transform((val, ctx) => {
-        try { return JSON.parse(val) } catch (e) { 
-            ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Recommendations must be a valid JSON object."});
-            return z.NEVER;
-        }
-    }),
+    diet: z.string().min(1, "Diet is required"),
+    recommendations: z.string().min(1, "Recommendations is required"),
 });
 
 const simpleSchema = z.object({
@@ -117,15 +107,7 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
                 Object.keys(data).forEach(key => {
                     const typedKey = key as keyof typeof data;
                     const value = data[typedKey];
-                    if(key === 'diet' || key === 'recommendations'){
-                        if (typeof value === 'object' && value !== null) {
-                           defaultValues[typedKey] = JSON.stringify(value, null, 2);
-                        } else {
-                           defaultValues[typedKey] = value;
-                        }
-                    } else {
-                        defaultValues[typedKey] = value || '';
-                    }
+                    defaultValues[typedKey] = value || '';
                 });
                 form.reset(defaultValues);
             }
@@ -213,10 +195,10 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
                     <FormItem><FormLabel>Biomarkers Category</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
                 )}/>
                 <FormField control={form.control} name="diet" render={({ field }) => (
-                    <FormItem><FormLabel>Diet (JSON)</FormLabel><FormControl><Textarea {...field} rows={8} placeholder='{ "key": "value" }' /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Diet</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
                 )}/>
                 <FormField control={form.control} name="recommendations" render={({ field }) => (
-                    <FormItem><FormLabel>Recommendations (JSON)</FormLabel><FormControl><Textarea {...field} rows={8} placeholder='{ "key": "value" or ["value1", "value2"] }' /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Recommendations</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
                 )}/>
             </>
         )

@@ -16,8 +16,8 @@ export type EBPSInterventionItem = {
   description: string;
   howShouldWeDo: string;
   biomarkersCategory: string; // Formerly clinicalOutcomes
-  diet: Record<string, string>;
-  recommendations: Record<string, string | string[]>;
+  diet: string;
+  recommendations: string;
 };
 
 export type SymphonyItem = {

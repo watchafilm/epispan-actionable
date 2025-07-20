@@ -15,8 +15,8 @@ type EBPSData = {
     description: string;
     howShouldWeDo: string;
     biomarkersCategory: string;
-    diet: Record<string, string>;
-    recommendations: Record<string, string | string[]>;
+    diet: string;
+    recommendations: string;
   };
 };
 
@@ -91,12 +91,7 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
                     <CardTitle className="text-lg font-bold">Diet</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
-                    {selectedData.diet && Object.entries(selectedData.diet).map(([title, text]) => (
-                        <div key={title}>
-                            <h4 className="font-semibold">{title}</h4>
-                            <div className="text-sm text-gray-700 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: text }}></div>
-                        </div>
-                    ))}
+                    <div className="text-sm text-gray-700 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: selectedData.diet }}></div>
                 </CardContent>
             </Card>
             <Card className="rounded-none">
@@ -104,20 +99,7 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
                     <CardTitle className="text-lg font-bold">Recommendations</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
-                    {selectedData.recommendations && Object.entries(selectedData.recommendations).map(([title, points]) => (
-                        <div key={title}>
-                            <h4 className="font-semibold">{title}</h4>
-                            {Array.isArray(points) ? (
-                                <ul className="list-disc pl-5 space-y-1 mt-1 prose prose-sm max-w-none">
-                                    {points.map((point, index) => (
-                                        <li key={index} className="text-sm text-gray-700" dangerouslySetInnerHTML={{ __html: point }}></li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <div className="text-sm text-gray-700 mt-1 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: points as string }}></div>
-                            )}
-                        </div>
-                    ))}
+                    <div className="text-sm text-gray-700 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: selectedData.recommendations }}></div>
                 </CardContent>
             </Card>
         </div>

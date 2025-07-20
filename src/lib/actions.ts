@@ -46,18 +46,8 @@ const ebpsSchema = z.object({
     description: z.string().min(1, "Description is required"),
     howShouldWeDo: z.string().min(1, "How should we do is required"),
     biomarkersCategory: z.string().min(1, "Biomarkers category is required"),
-    diet: z.string().min(1, "Diet JSON is required").transform((val, ctx) => {
-        try { return JSON.parse(val) } catch (e) { 
-            ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Diet must be a valid JSON object."});
-            return z.NEVER;
-        }
-    }),
-    recommendations: z.string().min(1, "Recommendations JSON is required").transform((val, ctx) => {
-        try { return JSON.parse(val) } catch (e) { 
-            ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Recommendations must be a valid JSON object."});
-            return z.NEVER;
-        }
-    }),
+    diet: z.string().min(1, "Diet is required"),
+    recommendations: z.string().min(1, "Recommendations is required"),
 });
 
 const simpleSchema = z.object({

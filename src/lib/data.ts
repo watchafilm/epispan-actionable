@@ -1,5 +1,7 @@
+'use server';
+
 import { db } from './firebase';
-import { collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc, writeBatch, runTransaction } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc, writeBatch, runTransaction, query, where, orderBy } from 'firebase/firestore';
 import type { BaseItem, Item, FitnessAgeItem, EBPSInterventionItem, SymphonyAgeItem, ReferenceItem } from './definitions';
 import { fitnessAgeReferences, overallOmicAgeReferences, symphonyAgeReferences } from './references';
 
@@ -53,6 +55,7 @@ const MOCK_EBPS_DATA: Omit<EBPSInterventionItem, 'id' | 'category' | 'order'>[] 
 const MOCK_SYMPHONY_DATA: Omit<SymphonyAgeItem, 'id' | 'category' | 'order'>[] = [
     {
         title: 'Musculoskeletal',
+        definition: '<p>The organ system age score is based on the evaluation of key biomarkers that reflect the health and function of the musculoskeletal system, which includes bones, muscles, and connective tissues.</p>',
         diet: '<ul><li>Vitamin D: Pan-sear salmon (15 mcg/100g) with soy-ginger glaze.</li><li>Collagen peptides: Simmer bone broth with ginger for soups.</li></ul>',
         exercise: '<ul><li>Resistance training.</li><li>General adults: Squats, lunges, and dumbbell rows 2-3 times/week.</li><li>Older adults: Chair squats and resistance band exercises to maintain strength safely.</li></ul>',
         lifestyle: '<p>Stress reduction: Chronic stress elevates inflammatory cytokines (IL-6), accelerating bone resorption (Rondanelli et al., 2021). Mindfulness or Tai Chi can help.</p>'
@@ -88,9 +91,10 @@ async function seedData() {
         [...fitnessAgeReferences, ...overallOmicAgeReferences, ...symphonyAgeReferences].forEach((item, index) => {
             const docRef = doc(itemsCollection);
             batch.set(docRef, { 
-                ...item, 
+                text: item.text,
+                subCategory: item.subCategory,
                 category: 'Reference', 
-                order: index, 
+                order: index,
                 title: item.text.substring(0, 50) + '...'
             });
         });
@@ -117,7 +121,7 @@ async function seedData() {
             for (const category of categories) {
                 const categoryItems = allItems.filter(item => item.category === category);
                 // Simple ordering by title for migration
-                categoryItems.sort((a, b) => a.title.localeCompare(b.title));
+                categoryItems.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
                 categoryItems.forEach((item, index) => {
                     const docRef = doc(db, 'items', item.id);
                     batch.update(docRef, { order: index });
@@ -136,26 +140,38 @@ seedData().catch(console.error);
 
 
 export async function getItems(category: Item['category']): Promise<Item[]> {
-  // Fetch all items and filter/sort in code to avoid composite indexes
-  const snapshot = await getDocs(itemsCollection);
-  const allItems = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Item));
+  const q = query(itemsCollection, where("category", "==", category), orderBy("order"));
   
-  const filteredItems = allItems.filter(item => item.category === category);
-  filteredItems.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-  
-  return filteredItems;
+  try {
+    const snapshot = await getDocs(q);
+    const items = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Item));
+    return items;
+  } catch (error: any) {
+    if (error.code === 'failed-precondition') {
+      // This error means the composite index is missing.
+      // We'll fall back to client-side sorting as a workaround.
+      console.warn("Firestore index not found. Falling back to client-side sorting. For production, create the required index in Firebase.");
+      const snapshot = await getDocs(collection(db, 'items'));
+      const allItems = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Item));
+      
+      const filteredItems = allItems.filter(item => item.category === category);
+      filteredItems.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+      return filteredItems;
+    }
+    // Re-throw other errors
+    throw error;
+  }
 }
 
-export async function getAllItems(): Promise<BaseItem[]> {
-  // Fetch all items and sort in code to avoid composite indexes
+export async function getAllItems(): Promise<Item[]> {
+  // Fetch all items and sort in code to handle potential missing indexes gracefully
   const snapshot = await getDocs(itemsCollection);
   const allItems = snapshot.docs.map(doc => ({
     id: doc.id,
-    title: doc.data().title,
-    category: doc.data().category,
-    order: doc.data().order,
-  }));
+    ...doc.data()
+  } as Item));
 
+  // Sort by category, then by order
   allItems.sort((a, b) => {
     if (a.category < b.category) return -1;
     if (a.category > b.category) return 1;
@@ -178,8 +194,8 @@ export async function getItemById(id: string): Promise<Item | null> {
 
 
 export async function addItem(itemData: Omit<Item, 'id' | 'order'> & {order?: number}) {
-    const items = await getItems(itemData.category);
-    const maxOrder = items.reduce((max, item) => Math.max(max, item.order ?? -1), -1);
+    const itemsInCategory = await getItems(itemData.category);
+    const maxOrder = itemsInCategory.reduce((max, item) => Math.max(max, item.order ?? -1), -1);
     
     const newItem = {
         ...itemData,

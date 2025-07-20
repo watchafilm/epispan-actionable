@@ -1,5 +1,5 @@
 import { getAllItems, getItems } from '@/lib/data';
-import { logout } from '@/lib/actions';
+import { logout, updateItemOrderAction } from '@/lib/actions';
 import { Button } from '@/components/ui/button';
 import { LogOut, PlusCircle } from 'lucide-react';
 import type { Item, FitnessAgeItem, EBPSInterventionItem, SymphonyAgeItem } from '@/lib/definitions';
@@ -56,7 +56,7 @@ export default async function EditorDashboardPage() {
           <TabsList className="grid w-full grid-cols-3 mb-4">
             <TabsTrigger value="fitness-age">FitnessAge</TabsTrigger>
             <TabsTrigger value="ebps-intervention">EBPS Intervention</TabsTrigger>
-            <TabsTrigger value="symphony">Symphony</TabsTrigger>
+            <TabsTrigger value="symphony">SymphonyAge</TabsTrigger>
           </TabsList>
           
           <TabsContent value="fitness-age">
@@ -97,9 +97,15 @@ export default async function EditorDashboardPage() {
                     </div>
                   </div>
 
-                  {Object.keys(fitnessData).length > 0 ? (
-                    Object.values(fitnessData).map(item => (
-                       <EditableWrapper key={item.id} item={item} category="FitnessAge">
+                  {fitnessItems.length > 0 ? (
+                    fitnessItems.map((item, index) => (
+                       <EditableWrapper 
+                          key={item.id} 
+                          item={item} 
+                          category="FitnessAge"
+                          isFirst={index === 0}
+                          isLast={index === fitnessItems.length - 1}
+                        >
                           <div className="border-2 border-dashed border-gray-300 p-4 rounded-lg my-4 relative hover:border-blue-500 transition-all">
                                <FitnessAgeClientPage data={{ [item.title]: item }} />
                           </div>
@@ -148,9 +154,15 @@ export default async function EditorDashboardPage() {
                     </div>
                   </div>
                   
-                  {Object.keys(ebpsData).length > 0 ? (
-                    Object.values(ebpsData).map(item => (
-                       <EditableWrapper key={item.id} item={item} category="EBPS Intervention">
+                  {ebpsItems.length > 0 ? (
+                    ebpsItems.map((item, index) => (
+                       <EditableWrapper 
+                          key={item.id} 
+                          item={item} 
+                          category="EBPS Intervention"
+                          isFirst={index === 0}
+                          isLast={index === ebpsItems.length - 1}
+                        >
                           <div className="border-2 border-dashed border-gray-300 p-4 rounded-lg my-4 relative hover:border-yellow-500 transition-all">
                                <EBPSInterventionClientPage data={{ [item.title]: item }} />
                           </div>
@@ -199,9 +211,15 @@ export default async function EditorDashboardPage() {
                     </div>
                   </div>
 
-                  {Object.keys(symphonyData).length > 0 ? (
-                    Object.values(symphonyData).map(item => (
-                      <EditableWrapper key={item.id} item={item} category="Symphony">
+                  {symphonyItems.length > 0 ? (
+                    symphonyItems.map((item, index) => (
+                      <EditableWrapper 
+                        key={item.id} 
+                        item={item} 
+                        category="Symphony"
+                        isFirst={index === 0}
+                        isLast={index === symphonyItems.length - 1}
+                      >
                         <div className="border-2 border-dashed border-gray-300 p-4 rounded-lg my-4 relative hover:border-red-500 transition-all">
                           <SymphonyClientPage data={{ [item.title]: item }} />
                         </div>

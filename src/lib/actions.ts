@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { addItem, updateItem, deleteItem } from './data';
+import { addItem, updateItem, deleteItem, getItems, updateItemsOrder } from './data';
 import type { Item } from './definitions';
 
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'genfosis';
@@ -32,7 +32,12 @@ export async function logout() {
   redirect('/edit/login');
 }
 
-const fitnessAgeSchema = z.object({
+// Base schema for order field, to be extended
+const baseSchema = z.object({
+  order: z.coerce.number().optional(),
+});
+
+const fitnessAgeSchema = baseSchema.extend({
   title: z.string().min(1, 'Title is required'),
   definition: z.string().min(1, 'Definition is required'),
   relatedDisease: z.string().min(1, 'Related disease is required'),
@@ -41,7 +46,7 @@ const fitnessAgeSchema = z.object({
   lifestyle: z.string().min(1, 'Lifestyle is required'),
 });
 
-const ebpsSchema = z.object({
+const ebpsSchema = baseSchema.extend({
     title: z.string().min(1, "Title is required"),
     description: z.string().min(1, "Description is required"),
     howShouldWeDo: z.string().min(1, "How should we do is required"),
@@ -50,14 +55,14 @@ const ebpsSchema = z.object({
     recommendations: z.string().min(1, "Recommendations is required"),
 });
 
-const symphonySchema = z.object({
+const symphonySchema = baseSchema.extend({
   title: z.string().min(1, 'Title is required'),
   diet: z.string().min(1, 'Diet is required'),
   exercise: z.string().min(1, 'Exercise is required'),
   lifestyle: z.string().min(1, 'Lifestyle is required'),
 });
 
-const referenceSchema = z.object({
+const referenceSchema = baseSchema.extend({
     title: z.string().min(1, 'Title is required'),
     value: z.string().min(1, 'Value is required'),
     description: z.string().min(1, 'Description is required'),
@@ -115,11 +120,66 @@ export async function saveItemAction(id: string | null, category: Item['category
 
 export async function deleteItemAction(id: string) {
   try {
+    // Before deleting, get the category to reorder remaining items
+    const items = await getItems('FitnessAge').then(fa => getItems('EBPS Intervention').then(ebps => getItems('Symphony').then(s => getItems('Reference').then(r => [...fa, ...ebps, ...s, ...r]))));
+    const itemToDelete = items.find(i => i.id === id);
+    
+    if (!itemToDelete) {
+      throw new Error('Item not found');
+    }
+    
     await deleteItem(id);
+
+    // Reorder remaining items
+    const remainingItems = await getItems(itemToDelete.category);
+    const orderedItems = remainingItems.map((item, index) => ({ id: item.id, order: index }));
+    await updateItemsOrder(orderedItems);
+
     revalidatePath('/edit/dashboard');
     revalidatePath('/(main)', 'layout');
     return { success: true };
   } catch (error) {
+     console.error("Delete item error:", error);
      return { success: false, message: 'Failed to delete item.' };
+  }
+}
+
+export async function updateItemOrderAction(itemId: string, direction: 'up' | 'down', category: Item['category']) {
+  try {
+    const items = await getItems(category);
+    const currentIndex = items.findIndex(item => item.id === itemId);
+
+    if (currentIndex === -1) {
+      return { success: false, message: 'Item not found' };
+    }
+    if (direction === 'up' && currentIndex === 0) {
+      return { success: true }; // Already at the top
+    }
+    if (direction === 'down' && currentIndex === items.length - 1) {
+      return { success: true }; // Already at the bottom
+    }
+
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    
+    // Swap orders
+    const currentItem = items[currentIndex];
+    const targetItem = items[targetIndex];
+
+    const updates = [
+      { id: currentItem.id, order: targetItem.order },
+      { id: targetItem.id, order: currentItem.order }
+    ];
+
+    await updateItemsOrder(updates);
+    
+    revalidatePath('/edit/dashboard');
+    const path = `/${category.toLowerCase().replace(/\s+/g, '-')}`;
+    revalidatePath(path);
+     if(path.startsWith('/')) revalidatePath(path.substring(1));
+
+    return { success: true };
+  } catch (error) {
+    console.error("Update order error:", error);
+    return { success: false, message: 'Failed to update item order.' };
   }
 }

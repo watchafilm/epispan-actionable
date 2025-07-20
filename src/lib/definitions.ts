@@ -7,17 +7,19 @@ export type FitnessAgeItem = {
   diet: string;
   exercise: string;
   lifestyle: string;
+  order: number;
 };
 
 export type EBPSInterventionItem = {
-  id: string;
+  id:string;
   category: "EBPS Intervention";
-  title: string; // e.g. Glucose
+  title: string;
   description: string;
   howShouldWeDo: string;
-  biomarkersCategory: string; // Formerly clinicalOutcomes
+  biomarkersCategory: string;
   diet: string;
   recommendations: string;
+  order: number;
 };
 
 export type SymphonyAgeItem = {
@@ -27,6 +29,7 @@ export type SymphonyAgeItem = {
   diet: string;
   exercise: string;
   lifestyle: string;
+  order: number;
 };
 
 export type ReferenceItem = {
@@ -37,6 +40,7 @@ export type ReferenceItem = {
   description: string;
   buttonText: string;
   buttonLink: string;
+  order: number;
 };
 
 
@@ -45,6 +49,7 @@ export type BaseItem = {
   id: string;
   category: "FitnessAge" | "Symphony" | "EBPS Intervention" | "Reference";
   title: string;
+  order: number;
   [key: string]: any; 
 };
 

@@ -99,6 +99,7 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
       howShouldWeDo: '',
       biomarkersCategory: '',
       recommendations: '',
+      order: 0,
     },
   });
 
@@ -114,7 +115,7 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
                 Object.keys(data).forEach(key => {
                     const typedKey = key as keyof typeof data;
                     const value = data[typedKey];
-                    defaultValues[typedKey] = value || '';
+                    defaultValues[typedKey] = value === null || value === undefined ? '' : value;
                 });
                 form.reset(defaultValues);
             }
@@ -137,6 +138,7 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
         howShouldWeDo: '',
         biomarkersCategory: '',
         recommendations: '',
+        order: 0,
       });
     }
   }, [item, category, open, form]);
@@ -257,6 +259,7 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
         { isLoading ? <p>Loading data...</p> : (
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto pr-4">
+             <FormField control={form.control} name="order" render={({ field }) => ( <FormItem className="hidden"><FormControl><Input type="hidden" {...field} /></FormControl></FormItem> )} />
              <FormField
               control={form.control}
               name="category"

@@ -14,7 +14,7 @@ type EBPSData = {
   [key: string]: {
     description: string;
     howShouldWeDo: string;
-    clinicalOutcomes: string;
+    biomarkersCategory: string;
     diet: Record<string, string>;
     recommendations: Record<string, string | string[]>;
   };
@@ -71,7 +71,7 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
                 <span className="font-semibold text-center">Biomarkers Category</span>
             </div>
             <div className="bg-[#fdf3da] text-black p-3 flex items-center justify-center">
-                <div className="font-bold text-lg prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: selectedData.clinicalOutcomes }}></div>
+                <div className="font-bold text-lg prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: selectedData.biomarkersCategory }}></div>
             </div>
         </div>
         <div className="grid grid-cols-2 gap-px border-2 border-[#f0c242] rounded-lg overflow-hidden bg-[#f0c242]">

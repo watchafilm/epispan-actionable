@@ -41,11 +41,11 @@ const MOCK_FITNESS_AGE_DATA: Omit<FitnessAgeItem, 'id' | 'category'>[] = [
 const MOCK_EBPS_DATA: Omit<EBPSInterventionItem, 'id' | 'category'>[] = [
     {
         title: "Glucose",
-        description: 'The primary sugar present in your blood is glucose. It serves as the main energy source for your body. It originates in the food you consume. The majority of what you eat is converted by your body into glucose, which is then released into your bloodstream. Your pancreas releases insulin when your blood glucose levels rise.\n\nIt looks like DNAm fasting glucose does change depending on your fed and fasted states.',
-        howShouldWeDo: 'Decrease',
-        clinicalOutcomes: 'Clinical outcomes',
+        description: '<p>The primary sugar present in your blood is glucose. It serves as the main energy source for your body. It originates in the food you consume. The majority of what you eat is converted by your body into glucose, which is then released into your bloodstream. Your pancreas releases insulin when your blood glucose levels rise.</p><p>It looks like DNAm fasting glucose does change depending on your fed and fasted states.</p>',
+        howShouldWeDo: '<p>Decrease</p>',
+        biomarkersCategory: '<p>Clinical outcomes</p>',
         diet: {
-          'Diabetes Mellitus': 'Type 1 Diabetes: An autoimmune condition where the immune system attacks and destroys insulin-producing beta cells in the pancreas, leading to insufficient insulin production.\n\nType 2 Diabetes: Characterized by insulin resistance, where cells do not respond effectively to insulin, and insufficient insulin production over time. It is often linked to lifestyle factors such as obesity and physical inactivity.',
+          'Diabetes Mellitus': 'Type 1 Diabetes: An autoimmune condition where the immune system attacks and destroys insulin-producing beta cells in the pancreas, leading to insufficient insulin production.<br><br>Type 2 Diabetes: Characterized by insulin resistance, where cells do not respond effectively to insulin, and insufficient insulin production over time. It is often linked to lifestyle factors such as obesity and physical inactivity.',
           'Impaired Fasting Glucose (IFG) and Impaired Glucose Tolerance (IGT)': 'Conditions where blood glucose levels are higher than normal but not high enough for a diabetes diagnosis. These conditions increase the risk of developing type 2 diabetes.',
           'Metabolic Syndrome': 'A cluster of conditions, including abdominal obesity, elevated blood pressure, high triglycerides, low HDL cholesterol, and insulin resistance. It increases the risk of type 2 diabetes and cardiovascular disease.',
           "Cushing's Syndrome": 'A hormonal disorder characterized by prolonged exposure to high levels of cortisol, which can lead to insulin resistance and elevated blood glucose levels.',

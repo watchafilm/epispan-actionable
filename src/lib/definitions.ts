@@ -15,7 +15,7 @@ export type EBPSInterventionItem = {
   title: string; // e.g. Glucose
   description: string;
   howShouldWeDo: string;
-  clinicalOutcomes: string;
+  biomarkersCategory: string; // Formerly clinicalOutcomes
   diet: Record<string, string>;
   recommendations: Record<string, string | string[]>;
 };

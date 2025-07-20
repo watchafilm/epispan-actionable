@@ -57,7 +57,7 @@ const ebpsSchema = z.object({
     title: z.string().min(1, "Title is required"),
     description: z.string().min(1, "Description is required"),
     howShouldWeDo: z.string().min(1, "How should we do is required"),
-    clinicalOutcomes: z.string().min(1, "Clinical outcomes is required"),
+    biomarkersCategory: z.string().min(1, "Biomarkers category is required"),
     diet: z.string().min(1, "Diet JSON is required").transform((val, ctx) => {
         try { return JSON.parse(val) } catch (e) { 
             ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Diet must be a valid JSON object."});
@@ -100,7 +100,7 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
       exercise: '',
       lifestyle: '',
       howShouldWeDo: '',
-      clinicalOutcomes: '',
+      biomarkersCategory: '',
       recommendations: '',
     },
   });
@@ -146,7 +146,7 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
         exercise: '',
         lifestyle: '',
         howShouldWeDo: '',
-        clinicalOutcomes: '',
+        biomarkersCategory: '',
         recommendations: '',
       });
     }
@@ -209,8 +209,8 @@ export function ItemDialog({ open, onOpenChange, item, category }: ItemDialogPro
                 <FormField control={form.control} name="howShouldWeDo" render={({ field }) => (
                     <FormItem><FormLabel>How should we do?</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
                 )}/>
-                <FormField control={form.control} name="clinicalOutcomes" render={({ field }) => (
-                    <FormItem><FormLabel>Clinical Outcomes</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
+                <FormField control={form.control} name="biomarkersCategory" render={({ field }) => (
+                    <FormItem><FormLabel>Biomarkers Category</FormLabel><FormControl><TiptapEditor content={field.value} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
                 )}/>
                 <FormField control={form.control} name="diet" render={({ field }) => (
                     <FormItem><FormLabel>Diet (JSON)</FormLabel><FormControl><Textarea {...field} rows={8} placeholder='{ "key": "value" }' /></FormControl><FormMessage /></FormItem>

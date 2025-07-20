@@ -42,7 +42,7 @@ export function SymphonyClientPage({ data }: SymphonyClientPageProps) {
        <div className="flex flex-col lg:flex-row lg:items-start lg:gap-6 space-y-4 lg:space-y-0">
         {dataKeys.length > 0 && (
         <div className="flex items-center gap-4 flex-shrink-0">
-          <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Click -&gt;</span>
+          <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Click -></span>
           <Select value={selectedKey} onValueChange={setSelectedKey}>
             <SelectTrigger className="w-[200px] bg-card border-destructive/50">
               <SelectValue placeholder="Select..." />

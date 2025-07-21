@@ -88,7 +88,7 @@ export function EBPSInterventionClientPage({ data }: EBPSInterventionClientPageP
         <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-[#f0c242] border-2 border-[#f0c242] rounded-lg overflow-hidden">
             <Card className="rounded-none">
                 <CardHeader className="bg-[#f0c242] text-black p-3">
-                    <CardTitle className="text-lg font-bold">Diet</CardTitle>
+                    <CardTitle className="text-lg font-bold">Associate Diseases</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
                     <div className="text-sm text-gray-700 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: selectedData.diet }}></div>

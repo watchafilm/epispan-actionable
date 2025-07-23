@@ -11,7 +11,8 @@ const navItems = [
   { href: '/fitness-age', label: 'FitnessAge' },
   { href: '/symphony', label: 'SymphonyAge' },
   { href: '/ebps-intervention', label: 'EBPS Intervention' },
-  { href: '/reference', label: 'References' },
+  { href: '/overall-age', label: 'OverallAge' },
+  { href: '/reference', label: 'Reference' },
 ];
 
 export function Header() {

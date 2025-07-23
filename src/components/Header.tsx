@@ -12,7 +12,7 @@ const navItems = [
   { href: '/symphony', label: 'SymphonyAge' },
   { href: '/ebps-intervention', label: 'EBPS Intervention' },
   { href: '/overall-age', label: 'OverallAge' },
-  { href: '/reference', label: 'Reference' },
+  { href: '/reference', label: 'References' },
 ];
 
 export function Header() {

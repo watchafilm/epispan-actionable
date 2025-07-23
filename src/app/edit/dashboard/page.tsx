@@ -2,13 +2,14 @@ import { getItems } from '@/lib/data';
 import { logout, updateItemOrderAction } from '@/lib/actions';
 import { Button } from '@/components/ui/button';
 import { LogOut, PlusCircle } from 'lucide-react';
-import type { Item, FitnessAgeItem, EBPSInterventionItem, SymphonyAgeItem, ReferenceItem } from '@/lib/definitions';
+import type { Item, FitnessAgeItem, EBPSInterventionItem, SymphonyAgeItem, ReferenceItem, OverallAgeItem } from '@/lib/definitions';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Image from 'next/image';
 
 import { FitnessAgeClientPage } from '@/app/(main)/fitness-age/client-page';
 import { EBPSInterventionClientPage } from '@/app/(main)/ebps-intervention/client-page';
 import { SymphonyClientPage } from '@/app/(main)/symphony/client-page';
+import { OverallAgeClientPage } from '@/app/(main)/overall-age/client-page';
 import { EditableWrapper } from './EditableWrapper';
 import { ItemDialog } from './ItemDialog';
 import { ReferenceItemDisplay } from '@/components/ReferenceItem';
@@ -20,6 +21,7 @@ export default async function EditorDashboardPage() {
   const fitnessItems = allItems.filter(item => item.category === 'FitnessAge').sort((a, b) => a.order - b.order) as FitnessAgeItem[];
   const ebpsItems = allItems.filter(item => item.category === 'EBPS Intervention').sort((a, b) => a.order - b.order) as EBPSInterventionItem[];
   const symphonyItems = allItems.filter(item => item.category === 'Symphony').sort((a, b) => a.order - b.order) as SymphonyAgeItem[];
+  const overallAgeItems = allItems.filter(item => item.category === 'OverallAge').sort((a,b) => a.order - b.order) as OverallAgeItem[];
   const referenceItems = allItems.filter(item => item.category === 'Reference').sort((a, b) => a.order - b.order) as ReferenceItem[];
   
   const fitnessData = fitnessItems.reduce((acc, item) => {
@@ -55,10 +57,11 @@ export default async function EditorDashboardPage() {
       </header>
       <main className="container mx-auto p-4 sm:p-6 lg:p-8">
         <Tabs defaultValue="fitness-age" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-4">
+          <TabsList className="grid w-full grid-cols-5 mb-4">
             <TabsTrigger value="fitness-age">FitnessAge</TabsTrigger>
             <TabsTrigger value="ebps-intervention">EBPS Intervention</TabsTrigger>
             <TabsTrigger value="symphony">SymphonyAge</TabsTrigger>
+            <TabsTrigger value="overall-age">OverallAge</TabsTrigger>
             <TabsTrigger value="reference">Reference</TabsTrigger>
           </TabsList>
           
@@ -237,6 +240,63 @@ export default async function EditorDashboardPage() {
             </div>
           </TabsContent>
           
+          <TabsContent value="overall-age">
+            <div className="border rounded-lg p-4 space-y-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold">Overall Age Page</h2>
+                  <EditableWrapper item={null} category="OverallAge">
+                    <Button>
+                      <PlusCircle className="mr-2 h-4 w-4" />
+                      Add New OverallAge Item
+                    </Button>
+                  </EditableWrapper>
+              </div>
+
+              <div className="container mx-auto py-6 px-4 border rounded-md">
+                  <div className="grid grid-cols-12 items-center gap-x-6 mb-8">
+                    <div className="col-span-2 flex-shrink-0">
+                      <Image
+                        src="https://www.genfosis.com/images/Genfosis_Logo_PNG.webp"
+                        alt="Genfosis Logo"
+                        width={120}
+                        height={32}
+                        priority
+                      />
+                    </div>
+                    <div className="col-span-10">
+                      <div className="flex items-center gap-x-8">
+                        <h1 className="text-4xl font-bold text-green-600 tracking-wider">OVERALL OmicAge</h1>
+                        <p className="text-green-600 text-sm max-w-2xl">
+                         The OMICmAge clock, developed in collaboration with Harvard University, represents a significant advancement in biological age assessment. By integrating multi-omics data, it provides a comprehensive and accurate estimation of an individual's biological age, reflecting their overall health status and mortality risk.
+                        </p>
+                      </div>
+                      <hr className="h-1 bg-green-600 border-0 rounded mt-2" />
+                    </div>
+                  </div>
+
+                  {overallAgeItems.length > 0 ? (
+                    overallAgeItems.map((item, index) => (
+                      <EditableWrapper 
+                        key={item.id} 
+                        item={item} 
+                        category="OverallAge"
+                        isFirst={index === 0}
+                        isLast={index === overallAgeItems.length - 1}
+                      >
+                        <div className="border-2 border-dashed border-gray-300 p-4 rounded-lg my-4 relative hover:border-green-500 transition-all">
+                          <OverallAgeClientPage data={{ [item.title]: item }} />
+                        </div>
+                      </EditableWrapper>
+                    ))
+                  ) : (
+                    <div className="text-center py-16 text-muted-foreground bg-muted/50 rounded-lg">
+                      <p>No OverallAge items yet. Click "Add New" to create one.</p>
+                    </div>
+                  )}
+              </div>
+            </div>
+          </TabsContent>
+
           <TabsContent value="reference">
             <div className="border rounded-lg p-4 space-y-4">
               <div className="flex justify-between items-center">

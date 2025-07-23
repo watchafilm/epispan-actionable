@@ -3,7 +3,7 @@
 
 import { db } from './firebase';
 import { collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc, writeBatch, runTransaction, query, where, orderBy } from 'firebase/firestore';
-import type { BaseItem, Item, FitnessAgeItem, EBPSInterventionItem, SymphonyAgeItem, ReferenceItem } from './definitions';
+import type { BaseItem, Item, FitnessAgeItem, EBPSInterventionItem, SymphonyAgeItem, ReferenceItem, OverallAgeItem } from './definitions';
 
 // --- Mock Data ---
 const MOCK_FITNESS_AGE_DATA: Omit<FitnessAgeItem, 'id' | 'category' | 'order'>[] = [
@@ -61,6 +61,23 @@ const MOCK_SYMPHONY_DATA: Omit<SymphonyAgeItem, 'id' | 'category' | 'order'>[] =
     }
 ];
 
+const MOCK_OVERALL_AGE_DATA: Omit<OverallAgeItem, 'id' | 'category' | 'order'>[] = [
+    {
+        title: 'DunedinPace',
+        description: '<p>Multiomic analysis integrates various biological data types— such as genomics, epigenomics, proteomics, and metabolomics— to offer a deeper understanding of complex biological systems. By combining these layers, it reveals how genes, proteins, and metabolites interact in health and disease.</p>',
+        diets: '<h3>Dietary Patterns</h3><ul><li>Mediterranean and DGA-aligned diets show the strongest associations with slower DunedinPACE, mediated by high fiber intake, antioxidants, and anti-inflammatory nutrients.</li><li>Fiber-rich diets (≥12g/day) correlate with reduced DunedinPACE (-0.10 SD per 12g/day), likely due to gut microbiome benefits and metabolic regulation.</li><li>Moderate protein intake is advised, as higher protein consumption (≥33g/day) associates with accelerated epigenetic aging (+0.04 SD for GrimAge).</li><li>Omega-3 fatty acids (1g/day EPA/DHA) reduce biological aging metrics, with additive effects when combined with vitamin D (2,000 IU/day).</li><li>Polyphenol-rich foods (e.g., berries, nuts) and vitamin A may protect against amyloid/tau pathology, indirectly influencing brain-specific aging.</li></ul>',
+        exercise: '<h3>Resistance Training</h3><ul><li>Strength training (30 minutes, 3x/week) synergizes with omega-3s and vitamin D, reducing PhenoAge biological age.</li><li>While aerobic exercise\'s direct impact on DunedinPACE isn\'t quantified, cohort studies link physical activity to slower GrimAge progression.</li></ul>',
+        lifestyle: '<h3>Toxin Avoidance</h3><ul><li>Sugar-sweetened beverages (91g/day) increase DunedinPACE (+0.06 SD), while artificially sweetened drinks show similar risks.</li><li>Smoking cessation is critical, as smoking amplifies diet-related aging effects by upregulating inflammatory pathways.</li></ul><h3>Stress and Sleep</h3><p>Note: Current evidence from the provided studies focuses on diet and exercise. Broader literature suggests stress reduction and sleep quality influence aging biomarkers, but these were not directly assessed in the cited DunedinPACE research.</p>'
+    },
+    {
+        title: 'OmicmAge',
+        description: '<p>DunedinPACE is a DNA methylation-based algorithm developed by researchers at Duke and Columbia Universities to measure the pace of biological aging from a single blood sample. It was created using data from the Dunedin Study, a long-term cohort following over 1,000 individuals born in 1972-1973 in Dunedin, New Zealand, with decades of health and lifestyle data.</p>',
+        diets: '<h3>Anti-inflammatory Diets</h3><ul><li>DASH and Mediterranean diets reduce odds of accelerated OMICmAge by 15-50% (OR 0.50-0.85) compared to standard diets, mediated by lower systemic inflammation and lipid profiles.</li><li>Polyphenol-rich supplements (e.g., Tartary buckwheat extract) show bidirectional effects: +0.31 SD acceleration in OMICmAge for those with initially low biological age. -0.28 SD deceleration in individuals with high baseline OMICmAge.</li></ul><h3>Key Drivers</h3><ul><li>Fiber intake (>30g/day) and omega-3/6 balance correlate with -0.15 SD OMICmAge reduction over 12 months.</li><li>High dietary inflammatory index (DII) increases odds of accelerated aging by 25-61%.</li></ul>',
+        exercise: '<p>No OMICmAge-specific exercise trials exist, but multi-omics data suggest:</p><ul><li>Resistance training synergizes with protein intake to reduce proteomic aging biomarkers linked to OMICmAge.</li><li>Cohort studies associate 150+ mins/week aerobic activity with -0.12 SD in multi-omic aging scores.</li></ul>',
+        lifestyle: '<h3>Sleep and Stress</h3><p>No direct OMICmAge studies identified, but proteomic clocks show:</p><ul><li>&lt;6h sleep/night associates with +0.18 SD acceleration in related metrics.</li><li>Mindfulness practices reduce inflammatory cytokines implicated in OMICmAge pathways.</li></ul><h3>Social Behavior</h3><p>Limited multi-omics data, though transcriptomic studies link strong social ties to -0.09 SD aging rat.</p>'
+    }
+];
+
 // --- Firestore Functions ---
 
 const itemsCollection = collection(db, 'items');
@@ -75,6 +92,7 @@ async function seedData() {
         { category: 'FitnessAge', data: MOCK_FITNESS_AGE_DATA, type: 'FitnessAge' },
         { category: 'EBPS Intervention', data: MOCK_EBPS_DATA, type: 'EBPS Intervention' },
         { category: 'Symphony', data: MOCK_SYMPHONY_DATA, type: 'Symphony' },
+        { category: 'OverallAge', data: MOCK_OVERALL_AGE_DATA, type: 'OverallAge'},
         { 
             category: 'Reference', 
             data: [],

@@ -265,10 +265,7 @@ export default async function EditorDashboardPage() {
                     </div>
                     <div className="col-span-10">
                       <div className="flex items-center gap-x-8">
-                        <h1 className="text-4xl font-bold text-green-600 tracking-wider">OVERALL OmicAge</h1>
-                        <p className="text-green-600 text-sm max-w-2xl">
-                         The OMICmAge clock, developed in collaboration with Harvard University, represents a significant advancement in biological age assessment. By integrating multi-omics data, it provides a comprehensive and accurate estimation of an individual's biological age, reflecting their overall health status and mortality risk.
-                        </p>
+                        <h1 className="text-4xl font-bold text-green-600 tracking-wider">OVERALL AGE</h1>
                       </div>
                       <hr className="h-1 bg-green-600 border-0 rounded mt-2" />
                     </div>

@@ -62,6 +62,14 @@ const symphonySchema = baseSchema.extend({
   lifestyle: z.string().min(1, 'Lifestyle is required'),
 });
 
+const overallAgeSchema = baseSchema.extend({
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().min(1, 'Description is required'),
+  diets: z.string().min(1, 'Diets are required'),
+  exercise: z.string().min(1, 'Exercise is required'),
+  lifestyle: z.string().min(1, 'Lifestyle is required'),
+});
+
 const referenceSchema = baseSchema.extend({
   title: z.string().optional(),
   text: z.string().min(1, 'Reference text is required'),
@@ -111,6 +119,9 @@ export async function saveItemAction(id: string | null, category: Item['category
     case 'Symphony':
       schema = symphonySchema;
       break;
+    case 'OverallAge':
+        schema = overallAgeSchema;
+        break;
     case 'Reference':
       schema = referenceSchema;
       break;

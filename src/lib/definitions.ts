@@ -32,6 +32,17 @@ export type SymphonyAgeItem = {
   order: number;
 };
 
+export type OverallAgeItem = {
+  id: string;
+  category: "OverallAge";
+  title: string;
+  description: string;
+  diets: string;
+  exercise: string;
+  lifestyle: string;
+  order: number;
+};
+
 export type ReferenceItem = {
   id: string;
   category: 'Reference';
@@ -45,7 +56,7 @@ export type ReferenceItem = {
 // A generic type for simplified list views like in the admin panel
 export type BaseItem = {
   id: string;
-  category: "FitnessAge" | "Symphony" | "EBPS Intervention" | "Reference";
+  category: "FitnessAge" | "Symphony" | "EBPS Intervention" | "Reference" | "OverallAge";
   title: string;
   order: number;
   [key: string]: any; 
@@ -53,4 +64,4 @@ export type BaseItem = {
 
 
 // A union type of all possible specific items
-export type Item = FitnessAgeItem | EBPSInterventionItem | SymphonyAgeItem | ReferenceItem;
+export type Item = FitnessAgeItem | EBPSInterventionItem | SymphonyAgeItem | ReferenceItem | OverallAgeItem;
